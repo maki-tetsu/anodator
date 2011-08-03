@@ -46,4 +46,5 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "anodator #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.options << "--charset=utf8"
 end

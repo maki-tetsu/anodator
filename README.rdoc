@@ -1,4 +1,4 @@
-= anodator is Anonimous Data Validator
+= anodator is Anonymous Data Validator
 
 anodator is a library to help you check the text data. Text data being checked
 is passed in an array, The output will be printed as two-dimensional array.
