@@ -164,6 +164,22 @@ describe NumericValidator, "#valid?" do
 
       it { @validator.should_not be_valid }
     end
+
+    context "values for valid negative integer" do
+      before(:each) do
+        Base.values = { "1" => "-312" }
+      end
+
+      it { @validator.should be_valid }
+    end
+
+    context "values for valid negative floating point value" do
+      before(:each) do
+        Base.values = { "1" => "-13.442" }
+      end
+
+      it { @validator.should be_valid }
+    end
   end
 
   context "with target expression and :only_integer" do

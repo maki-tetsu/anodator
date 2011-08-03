@@ -15,9 +15,9 @@ module Anodator
 
         # check format
         if @options[:only_integer]
-          regexp = /^\d+$/
+          regexp = /^-?\d+$/
         else
-          regexp = /^\d+(\.\d+)?$/
+          regexp = /^-?\d+(\.\d+)?$/
         end
         return false unless regexp.match target_value
 
