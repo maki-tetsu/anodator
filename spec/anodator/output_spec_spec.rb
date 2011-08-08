@@ -42,6 +42,7 @@ describe OutputSpec, ".new" do
         OutputSpec.new([
                         :target_numbers,
                         :target_names,
+                        :target_values,
                         :error_message,
                         :error_level,
                        ])

@@ -6,6 +6,7 @@ module Anodator
     VALID_SYMBOL_ITEMS = [
                           :target_numbers,
                           :target_names,
+                          :target_values,
                           :error_message,
                           :error_level,
                           :error_count,
@@ -122,6 +123,10 @@ module Anodator
               when :target_names
                 next check_result.target_numbers.map { |number|
                   input_spec_with_values.spec_item_at_by_number(number).name
+                }.join(" ")
+              when :target_values
+                next check_result.target_numbers.map { |number|
+                  input_spec_with_values[number]
                 }.join(" ")
               when :error_message
                 next check_result.message
