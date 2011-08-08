@@ -79,6 +79,11 @@ module Anodator
             raise ArgumentError.new("values must be respond to [] method for validations.")
           end
         end
+
+        # Get the data to be checked
+        def values
+          return @@values
+        end
       end
 
       # initializer
@@ -143,6 +148,12 @@ module Anodator
 
       def allow_blank?
         return @options[:allow_blank]
+      end
+
+      def validate_configuration
+        @@values.spec_item_by_expression(@target)
+      rescue UnknownTargetExpressionError => e
+        raise InvalidConfiguration.new(e.to_s)
       end
     end
   end

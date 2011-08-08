@@ -36,6 +36,10 @@ module Anodator
           raise ConfigurationError.new("Unknown logic option '#{@options[:logic]}")
         end
       end
+
+      def validate_configuration
+        # target check skip
+      end
     end
   end
 end
