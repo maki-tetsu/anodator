@@ -24,6 +24,80 @@ describe DateValidator, ".new" do
     it "should not raise error" do
       @new_proc.should_not raise_error
     end
+
+    it { @new_proc.call.format.should == "YYYY-MM-DD" }
+  end
+
+  context "with target expression and :format option" do
+    context ":format option is valid" do
+      before(:each) do
+        @new_proc = lambda {
+          DateValidator.new("1", :format => "YYYY/MM/DD")
+        }
+      end
+
+      it "should not raise error" do
+        @new_proc.should_not raise_error
+      end
+
+      context "and :from same format" do
+        before(:each) do
+          @new_proc = lambda {
+            DateValidator.new("1", :format => "YYYY/MM/DD", :from => "2011/01/01")
+          }
+        end
+
+        it "should not raise error" do
+          @new_proc.should_not raise_error
+        end
+      end
+    end
+
+    context ":format option contains double YYYY is invalid" do
+      before(:each) do
+        @new_proc = lambda {
+          DateValidator.new("1", :format => "YYYY/MM-DD YYYY")
+        }
+      end
+
+      it "should raise ArgumentError" do
+        @new_proc.should raise_error ArgumentError
+      end
+    end
+
+    context ":format option not contains D is invalid" do
+      before(:each) do
+        @new_proc = lambda {
+          DateValidator.new("1", :format => "YY/M")
+        }
+      end
+
+      it "should raise ArgumentError" do
+        @new_proc.should raise_error ArgumentError
+      end
+    end
+
+    context "when :format option contains short year with based on 1900" do
+      before(:each) do
+        @new_proc = lambda {
+          DateValidator.new("Birthday",
+                            :format => "M/D/YY", :base_year => 1900,
+                            :from => "1/25/80", :to => Date.new(2011, 1, 1))
+        }
+      end
+
+      it "should not raise error" do
+        @new_proc.should_not raise_error
+      end
+
+      it "#from should be 1980-01-25" do
+        @new_proc.call.from.should == Date.new(1980, 1, 25)
+      end
+
+      it "#to should be 2011-01-01" do
+        @new_proc.call.to.should == Date.new(2011, 1, 1)
+      end
+    end
   end
 
   context "with target expression and :from option with Date object" do
@@ -45,7 +119,7 @@ describe DateValidator, ".new" do
   context "with target expression and :from option with String object" do
     before(:each) do
       @new_proc = lambda {
-        DateValidator.new("1", :from => "2011/01/01")
+        DateValidator.new("1", :from => "2011-01-01")
       }
     end
 
@@ -65,7 +139,7 @@ describe DateValidator, ".new" do
   context "with target expression and :from option with invalid format date String object" do
     before(:each) do
       @new_proc = lambda {
-        DateValidator.new("1", :from => "2011/01/34")
+        DateValidator.new("1", :from => "2011-01-34")
       }
     end
 
@@ -93,7 +167,7 @@ describe DateValidator, ".new" do
   context "with target expression and :to option with String object" do
     before(:each) do
       @new_proc = lambda {
-        DateValidator.new("1", :to => "2011/01/01")
+        DateValidator.new("1", :to => "2011-01-01")
       }
     end
 
@@ -113,7 +187,7 @@ describe DateValidator, ".new" do
   context "with target expression and :to option with invalid format date String object" do
     before(:each) do
       @new_proc = lambda {
-        DateValidator.new("1", :to => "2011/01/34")
+        DateValidator.new("1", :to => "2011-01-34")
       }
     end
 
@@ -131,7 +205,7 @@ describe DateValidator, "#valid?" do
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/34/42" }
+        Validator::Base.values = { "1" => "2011-34-42" }
       end
 
       it { @validator.should_not be_valid }
@@ -139,7 +213,7 @@ describe DateValidator, "#valid?" do
 
     context "valid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/04/02" }
+        Validator::Base.values = { "1" => "2011-04-02" }
       end
 
       it { @validator.should be_valid }
@@ -148,12 +222,12 @@ describe DateValidator, "#valid?" do
 
   context "with target expression and :from option" do
     before(:each) do
-      @validator = DateValidator.new("1", :from => "2011/04/01")
+      @validator = DateValidator.new("1", :from => "2011-04-01")
     end
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/34/42" }
+        Validator::Base.values = { "1" => "2011-34-42" }
       end
 
       it { @validator.should_not be_valid }
@@ -161,7 +235,7 @@ describe DateValidator, "#valid?" do
 
     context "invalid date by :from option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/03/31" }
+        Validator::Base.values = { "1" => "2011-03-31" }
       end
 
       it { @validator.should_not be_valid }
@@ -169,7 +243,7 @@ describe DateValidator, "#valid?" do
 
     context "valid date by :from option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/04/01" }
+        Validator::Base.values = { "1" => "2011-04-01" }
       end
 
       it { @validator.should be_valid }
@@ -178,12 +252,12 @@ describe DateValidator, "#valid?" do
 
   context "with target expression and :to option" do
     before(:each) do
-      @validator = DateValidator.new("1", :to => "2011/04/01")
+      @validator = DateValidator.new("1", :to => "2011-04-01")
     end
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/34/42" }
+        Validator::Base.values = { "1" => "2011-34-42" }
       end
 
       it { @validator.should_not be_valid }
@@ -191,7 +265,7 @@ describe DateValidator, "#valid?" do
 
     context "invalid date by :to option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/04/02" }
+        Validator::Base.values = { "1" => "2011-04-02" }
       end
 
       it { @validator.should_not be_valid }
@@ -199,7 +273,45 @@ describe DateValidator, "#valid?" do
 
     context "valid date by :to option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/04/01" }
+        Validator::Base.values = { "1" => "2011-04-01" }
+      end
+
+      it { @validator.should be_valid }
+    end
+  end
+
+  context "with target expression and :to and :from option" do
+    before(:each) do
+      @validator = DateValidator.new("1", :from => "2010-04-01", :to => "2011-03-31")
+    end
+
+    context "invalid date expression" do
+      before(:each) do
+        Validator::Base.values = { "1" => "2011-34-42" }
+      end
+
+      it { @validator.should_not be_valid }
+    end
+
+    context "invalid date by :from option" do
+      before(:each) do
+        Validator::Base.values = { "1" => "2010-03-31" }
+      end
+
+      it { @validator.should_not be_valid }
+    end
+
+    context "invalid date by :to option" do
+      before(:each) do
+        Validator::Base.values = { "1" => "2011-04-01" }
+      end
+
+      it { @validator.should_not be_valid }
+    end
+
+    context "valid date by :from and :to option" do
+      before(:each) do
+        Validator::Base.values = { "1" => "2010-05-31" }
       end
 
       it { @validator.should be_valid }
@@ -213,7 +325,7 @@ describe DateValidator, "#valid?" do
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/34/42" }
+        Validator::Base.values = { "1" => "2011-34-42" }
       end
 
       it { @validator.should_not be_valid }
@@ -221,7 +333,7 @@ describe DateValidator, "#valid?" do
 
     context "valid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011/04/02" }
+        Validator::Base.values = { "1" => "2011-04-02" }
       end
 
       it { @validator.should be_valid }
