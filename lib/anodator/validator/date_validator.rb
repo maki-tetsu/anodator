@@ -113,7 +113,7 @@ module Anodator
         regexp_string.sub!(/DD/,   '(\d{2})')
         regexp_string.sub!(/D/,    '(\d{1,2})')
 
-        return Regexp.new(regexp_string)
+        return Regexp.new("^#{regexp_string}$")
       end
       private :date_regexp
 
