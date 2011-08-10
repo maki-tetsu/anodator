@@ -25,10 +25,22 @@ describe Anodator::Validator::FormatValidator, ".new" do
   end
 
   context "with target parameter and :format option" do
-    it "should raise error" do
+    it "should not raise error" do
       lambda {
         Anodator::Validator::FormatValidator.new("1", :format => /^\d+$/)
       }.should_not raise_error
+    end
+  end
+
+  context "with target parameter and :format option by string" do
+    it "should not raise error" do
+      lambda {
+        Anodator::Validator::FormatValidator.new("1", :format => '\d+')
+      }.should_not raise_error
+    end
+
+    it "should :format to regexp option" do
+      Anodator::Validator::FormatValidator.new("1", :format => '\d+').format.should == /\d+/
     end
   end
 end

@@ -6,6 +6,14 @@ module Anodator
     class FormatValidator < Base
       valid_option_keys :format
 
+      def initialize(target_expression, options = { })
+        super(target_expression, options)
+
+        if @options[:format].is_a? String
+          @options[:format] = Regexp.new("#{@options[:format]}")
+        end
+      end
+
       def validate
         if target_value.split(//).size.zero?
           if allow_blank?
@@ -22,6 +30,10 @@ module Anodator
         else
           return false
         end
+      end
+
+      def format
+        return @options[:format].dup
       end
     end
   end
