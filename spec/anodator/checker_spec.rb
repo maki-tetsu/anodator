@@ -250,4 +250,24 @@ describe "on after creation" do
       end
     end
   end
+
+  describe "#rule_info" do
+    before(:each) do
+      @checker.add_output_spec(@error_report_output_spec)
+    end
+
+    context "with valid values" do
+      before(:each) do
+        @proc = lambda {
+          @checker.rule_info
+        }
+      end
+
+      it { @proc.should_not raise_error }
+
+      it "should return 2 outputs" do
+        @proc.call.should be_a String
+      end
+    end
+  end
 end

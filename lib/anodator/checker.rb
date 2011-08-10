@@ -50,5 +50,9 @@ module Anodator
         spec.generate(@input_spec, @rule_set.results)
       end
     end
+
+    def rule_info
+      @rule_set.to_s
+    end
   end
 end

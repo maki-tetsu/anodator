@@ -37,8 +37,23 @@ module Anodator
         end
       end
 
+      def logic_expression
+        if @options[:logic] == LOGIC_OR
+          return "OR"
+        elsif @options[:logic] == LOGIC_AND
+          return "AND"
+        end
+      end
+
       def validate_configuration
         # target check skip
+      end
+
+      def to_s(level = 2, step = 2)
+        buf = "#{super(level, step)} LOGIC: #{logic_expression}\n"
+        buf += @options[:validators].map { |validator|
+          validator.to_s(level + step, step)
+        }.join("\n")
       end
     end
   end

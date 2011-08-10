@@ -42,5 +42,11 @@ module Anodator
         rule.validate_configuration
       end
     end
+
+    def to_s
+      @rules.map { |rule|
+        rule.to_s
+      }.join("\n")
+    end
   end
 end

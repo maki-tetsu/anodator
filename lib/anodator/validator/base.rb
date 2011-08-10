@@ -9,7 +9,7 @@ module Anodator
       #
       # :allow_blank options are all available options in Validator.
       # In addition, Validator All you need to consider the case of the blank.
-      @valid_option_keys = [:allow_blank]
+      @valid_option_keys = [:allow_blank, :description]
 
       # default options
       #
@@ -148,6 +148,14 @@ module Anodator
 
       def allow_blank?
         return @options[:allow_blank]
+      end
+
+      def description
+        return @options[:description]
+      end
+
+      def to_s(level = 4, step = 2)
+        (" " * level) + "- #{self.class}(#{self.description})"
       end
 
       def validate_configuration

@@ -13,14 +13,15 @@ module Anodator
     # Check level WARNING
     LEVEL_WARNING = 1
 
-    attr_reader :target_expressions, :message, :validator, :prerequisite, :level
+    attr_reader :target_expressions, :message, :validator, :prerequisite, :level, :description
 
-    def initialize(target_expressions, message, validator, prerequisite = nil, level = LEVEL_ERROR)
+    def initialize(target_expressions, message, validator, prerequisite = nil, level = LEVEL_ERROR, description = nil)
       @target_expressions = target_expressions.to_a
       @message            = message
       @validator          = validator
       @prerequisite       = prerequisite
       @level              = level
+      @description        = description
 
       if @target_expressions.size.zero?
         raise ArgumentError.new("target expressions cannot be blank")
@@ -69,6 +70,28 @@ module Anodator
       @prerequisite.validate_configuration unless @prerequisite.nil?
     rescue UnknownTargetExpressionError => e
       raise InvalidConfiguration.new(e.to_s)
+    end
+
+    def level_expression
+      if @level == LEVEL_ERROR
+        return "ERROR"
+      elsif @level == LEVEL_WARNING
+        return "WARNING"
+      end
+    end
+
+    def to_s
+      target_names = @target_expressions.map { |te| Validator::Base.values.spec_item_by_expression(te).name }.join(",")
+      buf =<<_EOD_
+Description: #{@description.nil? ? "None." : @description}
+  Targets: #{target_names}
+  Message: #{@message.template}
+  Level: #{level_expression}
+  Validator:
+#{@validator.to_s}
+  Prerequisite:
+#{@prerequisite.nil? ? "    - (None)" : @prerequisite.to_s}
+_EOD_
     end
   end
 end

@@ -80,6 +80,23 @@ describe Anodator::Validator::Base, "#new" do
       end
     end
 
+    context "and description parameter" do
+      before(:each) do
+        @new_proc = lambda {
+          Anodator::Validator::Base.new("name", :description => "description message here.")
+        }
+      end
+
+      it "should not raise ArgumentError" do
+        @new_proc.should_not raise_error ArgumentError
+      end
+
+      it "#description should be 'description message here.'" do
+        @base = @new_proc.call
+        @base.description.should == "description message here."
+      end
+    end
+
     context "and unknown parameter" do
       before(:each) do
         @new_proc = lambda {
