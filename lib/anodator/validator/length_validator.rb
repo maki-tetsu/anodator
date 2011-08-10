@@ -22,11 +22,11 @@ module Anodator
               raise ConfigurationError.new(":in option value must be Range object")
             end
           when :maximum
-            return false if length > configuration
+            return false if length > configuration.to_i
           when :minimum
-            return false if length < configuration
+            return false if length < configuration.to_i
           when :is
-            return false if length != configuration
+            return false if length != configuration.to_i
           end
         end
 
