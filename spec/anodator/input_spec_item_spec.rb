@@ -72,6 +72,29 @@ describe InputSpecItem, ".new" do
 
       it { @input_spec_item.number.should == "1" }
       it { @input_spec_item.name.should == "item_1" }
+      it { @input_spec_item.type.should == "STRING" }
+    end
+  end
+
+  context "with number, name and type(NUMERIC) parameter" do
+    before(:all) do
+      @new_proc = lambda {
+        InputSpecItem.new("1", "item_1", "NUMERIC")
+      }
+    end
+
+    it "should not raise error" do
+      @new_proc.should_not raise_error
+    end
+
+    context "after generated" do
+      before(:all) do
+        @input_spec_item = @new_proc.call
+      end
+
+      it { @input_spec_item.number.should == "1" }
+      it { @input_spec_item.name.should == "item_1" }
+      it { @input_spec_item.type.should == "NUMERIC" }
     end
   end
 end

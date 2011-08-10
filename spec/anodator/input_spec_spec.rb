@@ -27,7 +27,7 @@ describe InputSpec, ".new" do
                        { :number => "2", :name => "item_2" },
                        { :number => "3", :name => "item_3" },
                        { :number => "4", :name => "item_4" },
-                       { :number => "5", :name => "item_5" },
+                       { :number => "5", :name => "item_5", :type => InputSpecItem::TYPE_NUMERIC },
                        { :number => "6", :name => "item_6" },
                        { :number => "7", :name => "item_7" },
                        { :number => "8", :name => "item_8" },
@@ -44,6 +44,17 @@ describe InputSpec, ".new" do
       input_spec = @new_proc.call
       input_spec.instance_eval("@spec_items.count").should == 9
     end
+
+    it "@spec_items.each type.should be STRING" do
+      input_spec = @new_proc.call
+      input_spec.instance_eval("@spec_items").each do |input_spec_item|
+        if input_spec_item.number == "5"
+          input_spec_item.type.should == InputSpecItem::TYPE_NUMERIC
+        else
+          input_spec_item.type.should == InputSpecItem::TYPE_STRING
+        end
+      end
+    end
   end
 end
 
@@ -54,8 +65,8 @@ describe InputSpec, "after generated" do
                                  { :number => "2", :name => "item_2" },
                                  { :number => "3", :name => "item_3" },
                                  { :number => "4", :name => "item_4" },
-                                 { :number => "5", :name => "item_5" },
-                                 { :number => "6", :name => "item_6" },
+                                 { :number => "5", :name => "item_5", :type => InputSpecItem::TYPE_NUMERIC },
+                                 { :number => "6", :name => "item_6", :type => InputSpecItem::TYPE_NUMERIC },
                                  { :number => "7", :name => "item_7" },
                                  { :number => "8", :name => "item_8" },
                                  { :number => "9", :name => "item_9" },
@@ -180,6 +191,70 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
+          @proc.should raise_error UnknownTargetExpressionError
+        end
+      end
+
+      context "when access valid calculation expression" do
+        before(:each) do
+          @proc = lambda {
+            @input_spec["CALC::[[1]]+[[2]]"]
+          }
+        end
+
+        it "should not raise error" do
+          @proc.should_not raise_error
+        end
+
+        it { @proc.call.should == "12" }
+      end
+
+      context "when access invalid calculation expression with unknown number" do
+        before(:each) do
+          @proc = lambda {
+            @input_spec["CALC::[[1]]+[[12]]"]
+          }
+        end
+
+        it "should raise UnknownTargetExpressionError" do
+          @proc.should raise_error UnknownTargetExpressionError
+        end
+      end
+
+      context "when access invalid calculation expression with syntax error" do
+        before(:each) do
+          @proc = lambda {
+            @input_spec["CALC::[[1]][[2]]"]
+          }
+        end
+
+        it "should raise UnknownTargetExpressionError" do
+          @proc.should_not raise_error UnknownTargetExpressionError
+        end
+      end
+
+      context "when access valid calculation expression for numeric add" do
+        before(:each) do
+          @proc = lambda {
+            @input_spec["CALC::[[5]]+[[6]]"]
+          }
+        end
+
+        it "should not raise error" do
+          @proc.should_not raise_error
+        end
+
+        it { @proc.call.should == 11 }
+      end
+
+      context "when access invalid calculation expression for numeric and string add" do
+        before(:each) do
+          @proc = lambda {
+            @input_spec["CALC::[[1]]+[[6]]"]
+          }
+        end
+
+        it "should raise UnknownTargetExpressionError" do
           @proc.should raise_error UnknownTargetExpressionError
         end
       end
@@ -388,6 +463,44 @@ describe InputSpec, "after generated" do
       it "should raise error UnknownTargetExpressionError" do
         @proc.should raise_error UnknownTargetExpressionError
       end
+    end
+
+    context "when access valid calculation expression" do
+      before(:each) do
+        @proc = lambda {
+          @input_spec.spec_item_by_expression("CALC::[[1]]+[[2]]")
+        }
+      end
+
+      it "should not raise error" do
+        @proc.should_not raise_error
+      end
+
+      it { @proc.call.should == [@input_spec.spec_item_at_by_number("1"),
+                                 @input_spec.spec_item_at_by_number("2")] }
+    end
+
+    context "when access invalid calculation expression with unknown number" do
+      before(:each) do
+        @proc = lambda {
+          @input_spec.spec_item_by_expression("CALC::[[1]]+[[12]]")
+        }
+      end
+
+      it "should raise UnknownTargetExpressionError" do
+        @proc.should raise_error UnknownTargetExpressionError
+      end
+    end
+
+    context "when access invalid calculation expression with syntax error" do
+      before(:each) do
+        @proc = lambda {
+          @input_spec.spec_item_by_expression("CALC::[[1]][[2]]")
+        }
+      end
+
+      it { @proc.call.should == [@input_spec.spec_item_at_by_number("1"),
+                                 @input_spec.spec_item_at_by_number("2")] }
     end
   end
 

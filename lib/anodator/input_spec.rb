@@ -7,6 +7,8 @@ module Anodator
   class SourceDataNotProvidedError < AnodatorError; end
 
   class InputSpec
+    CALCULATION_HOLDER_REGEXP = /\[\[([^\]]+)\]\]/
+
     def initialize(spec_items = [])
       @spec_items  = []
       @source      = nil
@@ -20,8 +22,15 @@ module Anodator
       spec_items.each do |spec_item_values|
         if spec_item_values.keys.include?(:number) &&
             spec_item_values.keys.include?(:name)
-          push_spec_items(InputSpecItem.new(spec_item_values[:number],
-                                            spec_item_values[:name]))
+          if spec_item_values.keys.include?(:type) &&
+              !spec_item_values[:type].nil?
+            push_spec_items(InputSpecItem.new(spec_item_values[:number],
+                                              spec_item_values[:name],
+                                              spec_item_values[:type]))
+          else
+            push_spec_items(InputSpecItem.new(spec_item_values[:number],
+                                              spec_item_values[:name]))
+          end
         end
       end
     end
@@ -82,11 +91,44 @@ module Anodator
       end
     end
 
+    def value_by_calculation(calculation)
+      holders = check_calculation_expression(calculation)
+
+      values = holders.inject({ }) do |hash, expression|
+        value = self[expression]
+        spec = spec_item_by_expression(expression)
+
+        case spec.type
+        when InputSpecItem::TYPE_NUMERIC
+          hash["[[#{expression}]]"] = %Q|BigDecimal("#{value}")|
+        else # String, other
+          hash["[[#{expression}]]"] = %Q|"#{value}"|
+        end
+        next hash
+      end
+
+      calculation.gsub!(CALCULATION_HOLDER_REGEXP) do |match|
+        values[match]
+      end
+
+      value = eval(calculation)
+      value = value.to_s("F") if value.is_a? BigDecimal
+
+      return value
+    rescue UnknownTargetExpressionError => ex
+      raise
+    rescue => ex
+      raise UnknownTargetExpressionError.new("accessed by calculation '#{calculation}'")
+    end
+    private :value_by_calculation
+
     def [](target_expression)
       raise SourceDataNotProvidedError.new if @source.nil?
 
       if target_expression.is_a? Fixnum
         return value_at(target_expression)
+      elsif /^CALC::(.+)$/.match target_expression
+        return value_by_calculation($1)
       else
         begin
           return value_at_by_number(target_expression)
@@ -120,15 +162,37 @@ module Anodator
       end
     end
 
+    def spec_items_by_calculation(calculation)
+      holders = check_calculation_expression(calculation)
+      holders.map do |expression|
+        spec_item_by_expression(expression)
+      end
+    end
+    private :spec_items_by_calculation
+
     def spec_item_by_expression(target_expression)
       if target_expression.is_a? Fixnum
         return spec_item_at(target_expression)
+      elsif /^CALC::(.+)$/.match target_expression
+        return spec_items_by_calculation($1)
       else
         begin
           return spec_item_at_by_number(target_expression)
         rescue UnknownTargetExpressionError
           return spec_item_at_by_name(target_expression)
         end
+      end
+    end
+
+    # return all holders specs
+    def check_calculation_expression(calculation)
+      if /(@|require|load|;)/.match calculation
+        return ArgumentError.new("Invalid calcuation expression '#{calcuation}'")
+      end
+
+      calculation.scan(CALCULATION_HOLDER_REGEXP).flatten.map do |target_expression|
+        spec_item_by_expression(target_expression)
+        next target_expression
       end
     end
   end
