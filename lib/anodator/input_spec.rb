@@ -58,7 +58,7 @@ module Anodator
       if @spec_items[index].nil?
         raise UnknownTargetExpressionError.new("accessed by index '#{index}'")
       else
-        return @source[index].dup
+        return @source[index].to_s
       end
     end
 
@@ -66,7 +66,7 @@ module Anodator
       raise SourceDataNotProvidedError.new if @source.nil?
 
       if @number_dict.keys.include?(number)
-        return @source[@number_dict[number][:index]].dup
+        return value_at(@number_dict[number][:index])
       else
         raise UnknownTargetExpressionError.new("accessed by number '#{number}'")
       end
@@ -76,7 +76,7 @@ module Anodator
       raise SourceDataNotProvidedError.new if @source.nil?
 
       if @name_dict.keys.include?(name)
-        return @source[@name_dict[name][:index]].dup
+        return value_at(@name_dict[name][:index])
       else
         raise UnknownTargetExpressionError.new("accessed by name '#{name}'")
       end
