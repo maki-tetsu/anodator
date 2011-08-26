@@ -14,12 +14,14 @@ module Anodator
                           :error_and_warning_count,
                          ]
 
-    attr_reader :items, :target, :include_no_error
+    attr_reader   :items, :target, :include_no_error
+    attr_accessor :separator
 
     def initialize(items = [], options = { })
       @items            = items.to_a
       @target           = TARGET_ERROR
       @include_no_error = false
+      @separator        = " "
 
       options.each do |key, opt|
         case key
@@ -27,6 +29,8 @@ module Anodator
           @target = opt
         when :include_no_error
           @include_no_error = !!opt
+        when :separator
+          @separator = opt.to_s
         else
           raise ArgumentError.new("unknown option #{key}.")
         end
@@ -119,15 +123,15 @@ module Anodator
             if item.is_a? Symbol
               case item
               when :target_numbers
-                next check_result.target_numbers.join(" ")
+                next check_result.target_numbers.join(@separator)
               when :target_names
                 next check_result.target_numbers.map { |number|
                   input_spec_with_values.spec_item_at_by_number(number).name
-                }.join(" ")
+                }.join(@separator)
               when :target_values
                 next check_result.target_numbers.map { |number|
                   input_spec_with_values[number]
-                }.join(" ")
+                }.join(@separator)
               when :error_message
                 next check_result.message
               when :error_level

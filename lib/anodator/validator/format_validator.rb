@@ -4,7 +4,10 @@ require "anodator/validator/configuration_error"
 module Anodator
   module Validator
     class FormatValidator < Base
-      valid_option_keys :format
+      ALL_ZENKAKU_REGEXP = /(?:\xEF\xBD[\xA1-\xBF]|\xEF\xBE[\x80-\x9F])|[\x20-\x7E]/
+
+      valid_option_keys :format, :all_zenkaku
+      default_options :all_zenkaku => false
 
       def initialize(target_expression, options = { })
         super(target_expression, options)
@@ -21,14 +24,19 @@ module Anodator
           end
         end
 
-        unless @options[:format].is_a? Regexp
-          raise ConfigurationError.new(":format option must be Regexp object")
-        end
 
-        if @options[:format].match target_value
-          return true
+        if @options[:all_zenkaku]
+          return target_value !~ ALL_ZENKAKU_REGEXP
         else
-          return false
+          unless @options[:format].is_a? Regexp
+            raise ConfigurationError.new(":format option must be Regexp object")
+          end
+
+          if @options[:format].match target_value
+            return true
+          else
+            return false
+          end
         end
       end
 

@@ -244,7 +244,7 @@ describe InputSpec, "after generated" do
           @proc.should_not raise_error
         end
 
-        it { @proc.call.should == 11 }
+        it { @proc.call.should == "11.0" }
       end
 
       context "when access invalid calculation expression for numeric and string add" do
