@@ -1,3 +1,5 @@
+require "csv"
+
 module Anodator
   module Utils
     # load input_spec from csv file
