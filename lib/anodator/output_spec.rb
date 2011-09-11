@@ -15,13 +15,14 @@ module Anodator
                          ]
 
     attr_reader   :items, :target, :include_no_error
-    attr_accessor :separator
+    attr_accessor :separator, :value_separator
 
     def initialize(items = [], options = { })
       @items            = items.to_a
       @target           = TARGET_ERROR
       @include_no_error = false
       @separator        = " "
+      @value_separator  = ""
 
       options.each do |key, opt|
         case key
@@ -29,7 +30,7 @@ module Anodator
           @target = opt
         when :include_no_error
           @include_no_error = !!opt
-        when :separator
+        when :separator, :value_separator
           @separator = opt.to_s
         else
           raise ArgumentError.new("unknown option #{key}.")
@@ -131,7 +132,7 @@ module Anodator
               when :target_values
                 next check_result.target_numbers.map { |number|
                   input_spec_with_values[number]
-                }.join(@separator)
+                }.join(@value_separator)
               when :error_message
                 next check_result.message
               when :error_level
