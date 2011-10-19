@@ -15,27 +15,24 @@ module Anodator
       if @message.split(//).size.zero?
         raise ArgumentError.new("message cannot be blank")
       end
-      unless [Rule::LEVEL_ERROR, Rule::LEVEL_WARNING].include?(level)
-        raise ArgumentError.new("level must be ERROR or WARNING")
+      unless Rule::ERROR_LEVELS.values.include?(level)
+        raise ArgumentError.new("level must be #{Rule::ERROR_LEVEL_NAMES.join(", ")}")
       end
     end
 
     def to_s
-      buf = "[      ]\t"
-      if @level == Rule::LEVEL_WARNING
-        buf = "[WARING]\t"
-      else
-        buf = "[ERROR ]\t"
-      end
+      buf = "[#{Rule.level_expression(@level)}]\t"
       buf += @message + " |#{@target_numbers.join(", ")}|"
     end
 
-    def error?
-      return Rule::LEVEL_ERROR == @level
-    end
+    def method_missing(message, *args)
+      if message.to_s =~ /(\A[a-zA-Z_]+)\?\Z/
+        if Rule::ERROR_LEVELS.keys.include?($1.to_sym)
+          return Rule::ERROR_LEVELS[$1.to_sym] == @level
+        end
+      end
 
-    def warning?
-      return Rule::LEVEL_WARNING == @level
+      super
     end
   end
 end

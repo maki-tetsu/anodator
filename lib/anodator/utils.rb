@@ -209,14 +209,11 @@ module Anodator
         if !row[4].nil? && prerequisite.nil?
           raise "Unknown validator identifier '#{row[4]}'"
         end
-        level = case row[5]
-                when "ERROR"
-                  Rule::LEVEL_ERROR
-                when "WARNING"
-                  Rule::LEVEL_WARNING
-                else
-                  raise "Unknown error type '#{row[5]}'"
-                end
+        if Rule::ERROR_LEVEL_NAMES.values.include?(row[5])
+          level = Rule::ERROR_LEVELS[Rule::ERROR_LEVEL_NAMES.index(row[5])]
+        else
+          raise "Unknown error type '#{row[5]}'"
+        end
         message = Message.new(row[6])
 
         rule_set <<

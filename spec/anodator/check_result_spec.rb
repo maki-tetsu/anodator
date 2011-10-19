@@ -36,7 +36,7 @@ describe CheckResult, ".new" do
   context "with target_numbers, message and level" do
     before(:each) do
       @new_proc = lambda {
-        CheckResult.new(["1", "2"], "An error occured for 1 and 2 values.", Rule::LEVEL_ERROR)
+        CheckResult.new(["1", "2"], "An error occured for 1 and 2 values.", Rule::ERROR_LEVELS[:error])
       }
     end
 
@@ -58,7 +58,7 @@ describe CheckResult, ".new" do
       end
 
       it "#level should be set" do
-        @check_result.level.should == Rule::LEVEL_ERROR
+        @check_result.level.should == Rule::ERROR_LEVELS[:error]
       end
     end
   end
@@ -67,7 +67,7 @@ end
 describe CheckResult, "#error?" do
   context "when level is error" do
     before(:each) do
-      @check_result = CheckResult.new("1", "message", Rule::LEVEL_ERROR)
+      @check_result = CheckResult.new("1", "message", Rule::ERROR_LEVELS[:error])
     end
 
     it { @check_result.should be_error }
@@ -75,7 +75,7 @@ describe CheckResult, "#error?" do
 
   context "when level is warning" do
     before(:each) do
-      @check_result = CheckResult.new("1", "message", Rule::LEVEL_WARNING)
+      @check_result = CheckResult.new("1", "message", Rule::ERROR_LEVELS[:warning])
     end
 
     it { @check_result.should_not be_error }
@@ -85,7 +85,7 @@ end
 describe CheckResult, "#warning?" do
   context "when level is error" do
     before(:each) do
-      @check_result = CheckResult.new("1", "message", Rule::LEVEL_ERROR)
+      @check_result = CheckResult.new("1", "message", Rule::ERROR_LEVELS[:error])
     end
 
     it { @check_result.should_not be_warning }
@@ -93,7 +93,7 @@ describe CheckResult, "#warning?" do
 
   context "when level is warning" do
     before(:each) do
-      @check_result = CheckResult.new("1", "message", Rule::LEVEL_WARNING)
+      @check_result = CheckResult.new("1", "message", Rule::ERROR_LEVELS[:warning])
     end
 
     it { @check_result.should be_warning }

@@ -67,8 +67,8 @@ describe Rule, "#new" do
         @rule.prerequisite.should be_nil
       end
 
-      it "#level should equal by default(LEVEL_ERROR)" do
-        @rule.level.should == Rule::LEVEL_ERROR
+      it "#level should equal by default(ERROR_LEVELS[:error])" do
+        @rule.level.should == Rule::ERROR_LEVELS[:error]
       end
     end
   end
@@ -81,7 +81,7 @@ describe Rule, "#new" do
         @message = Message.new("'[[1::name]]' and '[[2::name]]' cannot be blank")
         @validator = Validator::ComplexValidator.new(:validators => [v1, v2])
         @prerequisite = Validator::BlankValidator.new("3")
-        Rule.new(["1", "2"], @message, @validator, @prerequisite, Rule::LEVEL_WARNING)
+        Rule.new(["1", "2"], @message, @validator, @prerequisite, Rule::ERROR_LEVELS[:warning])
       }
     end
 
@@ -111,7 +111,7 @@ describe Rule, "#new" do
       end
 
       it "#level should equal by initialize" do
-        @rule.level.should == Rule::LEVEL_WARNING
+        @rule.level.should == Rule::ERROR_LEVELS[:warning]
       end
     end
   end
@@ -165,5 +165,37 @@ describe Rule, "#check" do
     end
 
     it { @rule.check.should be_nil }
+  end
+end
+
+describe Rule, ".add_error_level" do
+  context "when new valid error level" do
+    before(:each) do
+      @proc = lambda {
+        Rule.add_error_level(3, :fatal, "FATAL")
+      }
+    end
+
+    after(:each) do
+      Rule.remove_error_level(:fatal)
+    end
+
+    it "should not raise error" do
+      lambda {
+        @proc.call
+      }.should_not raise_error
+    end
+
+    it "should 3 error levels" do
+      lambda {
+        @proc.call
+      }.should change(Rule::ERROR_LEVELS, :size).from(2).to(3)
+    end
+
+    it "should 3 error level names" do
+      lambda {
+        @proc.call
+      }.should change(Rule::ERROR_LEVEL_NAMES, :size).from(2).to(3)
+    end
   end
 end

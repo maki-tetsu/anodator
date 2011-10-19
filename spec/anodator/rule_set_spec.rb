@@ -53,7 +53,7 @@ describe RuleSet, "after generated" do
       @rule_set.add_rule(Rule.new("phone",
                                   Message.new("[[phone::name]] is invalid format."),
                                   Validator::FormatValidator.new("phone", :format => /^\d+-\d+-\d+$/),
-                                  Validator::PresenceValidator.new("phone"), Rule::LEVEL_WARNING))
+                                  Validator::PresenceValidator.new("phone"), Rule::ERROR_LEVELS[:warning]))
       # mail address
       @rule_set.add_rule(Rule.new("4",
                                   Message.new("[[4:name]] is invalid format."),
@@ -87,7 +87,7 @@ describe RuleSet, "after generated" do
       @rule_set << Rule.new("phone",
                             Message.new("[[phone::name]] is invalid format."),
                             Validator::FormatValidator.new("phone", :format => /^\d+-\d+-\d+$/),
-                            Validator::PresenceValidator.new("phone"), Rule::LEVEL_WARNING)
+                            Validator::PresenceValidator.new("phone"), Rule::ERROR_LEVELS[:warning])
       # mail address
       @rule_set << Rule.new("4",
                             Message.new("[[4::name]] is invalid format."),
@@ -121,7 +121,7 @@ describe RuleSet, "after generated" do
       @rule_set << Rule.new("phone",
                             Message.new("[[phone::name]] is invalid format."),
                             Validator::FormatValidator.new("phone", :format => /^\d+-\d+-\d+$/),
-                            Validator::PresenceValidator.new("phone"), Rule::LEVEL_WARNING)
+                            Validator::PresenceValidator.new("phone"), Rule::ERROR_LEVELS[:warning])
       # mail address
       @rule_set << Rule.new("4",
                             Message.new("[[4::name]] is invalid format."),
@@ -165,7 +165,7 @@ describe RuleSet, "after generated" do
       @rule_set << Rule.new("phone",
                             Message.new("[[phone::name]] is invalid format.([[phone::value]])"),
                             Validator::FormatValidator.new("phone", :format => /^\d+-\d+-\d+$/),
-                            Validator::PresenceValidator.new("phone"), Rule::LEVEL_WARNING)
+                            Validator::PresenceValidator.new("phone"), Rule::ERROR_LEVELS[:warning])
       # mail address
       @rule_set << Rule.new("4",
                             Message.new("[[4::name]] is invalid format.([[4::value]])"),
