@@ -8,14 +8,54 @@ module Anodator
   # Rule has target expressions, prerequisite, validator and message.
   # "Prerequisite" is represented by the Validator.
   class Rule
-    # Check level ERROR
-    LEVEL_ERROR   = 2
-    # Check level WARNING
-    LEVEL_WARNING = 1
+    # Check levels
+    #
+    # default levels are error and warning.
+    # You can add any levels.
+    ERROR_LEVELS = {
+      :error   => 2, # ERROR
+      :warning => 1, # WARNING
+    }
+
+    # Check level names
+    #
+    # Check level name labels
+    ERROR_LEVEL_NAMES = {
+      :error   => "ERROR",
+      :warning => "WARNING",
+    }
 
     attr_reader :target_expressions, :message, :validator, :prerequisite, :level, :description
 
-    def initialize(target_expressions, message, validator, prerequisite = nil, level = LEVEL_ERROR, description = nil)
+    def self.add_error_level(value, symbol, label)
+      # value check
+      raise "Error level value must be Integer" unless value.is_a? Integer
+      raise "Error level value must be greater than zero" unless value > 0
+      raise "Error level value #{value} already exists" if ERROR_LEVELS.values.include?(value)
+      # symbol check
+      raise "Error level symbol must be symbol" unless symbol.is_a? Symbol
+      raise "Error level symbol #{symbol} already exists" if ERROR_LEVELS.keys.include?(symbol)
+      # label check
+      raise "Error level label must be string" unless label.is_a? String
+      raise "Error level label #{label} already exists" if ERROR_LEVEL_NAMES.values.include?(label)
+
+      # check OK
+      ERROR_LEVELS[symbol] = value
+      ERROR_LEVEL_NAMES[symbol] = label
+    end
+
+    def self.remove_error_level(symbol)
+      # symbol check
+      raise "Unknown rror level symbol #{symbol}" unless ERROR_LEVELS.keys.include?(symbol)
+      # count check
+      raise "Error levels must be atleast one value" if ERROR_LEVELS.size == 1
+
+      # check OK
+      ERROR_LEVELS.delete(symbol)
+      ERROR_LEVEL_NAMES.delete(symbol)
+    end
+
+    def initialize(target_expressions, message, validator, prerequisite = nil, level = ERROR_LEVELS.values.sort.last, description = nil)
       @target_expressions = target_expressions.to_a
       @message            = message
       @validator          = validator
@@ -32,8 +72,8 @@ module Anodator
       if @validator.nil?
         raise ArgumentError.new("validator cannot be blank")
       end
-      unless [LEVEL_ERROR, LEVEL_WARNING].include?(@level)
-        raise ArgumentError.new("level must be ERROR or WARNING")
+      unless ERROR_LEVELS.values.include?(@level)
+        raise ArgumentError.new("level must be #{ERROR_LEVEL_NAMES.join(", ")}.")
       end
     end
 
@@ -73,11 +113,15 @@ module Anodator
     end
 
     def level_expression
-      if @level == LEVEL_ERROR
-        return "ERROR"
-      elsif @level == LEVEL_WARNING
-        return "WARNING"
+      return Rule.level_expression(@level)
+    end
+
+    def self.level_expression(level)
+      if ERROR_LEVELS.values.include?(level)
+        return ERROR_LEVEL_NAMES[ERROR_LEVELS.index(level)]
       end
+
+      return nil
     end
 
     def to_s

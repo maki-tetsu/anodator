@@ -203,7 +203,7 @@ describe OutputSpec, "#generate" do
     @rule_set << Rule.new("3",
                           Message.new("[[3::name]] Cannot be blank"),
                           Validator::PresenceValidator.new("3"),
-                          nil, Rule::LEVEL_WARNING)
+                          nil, Rule::ERROR_LEVELS[:warning])
     @rule_set << Rule.new(["3", "4"],
                           Message.new("[[4::name]] Must be 'M' or 'F'"),
                           Validator::InclusionValidator.new("4",
@@ -237,10 +237,10 @@ describe OutputSpec, "#generate" do
       it "should generate error list datas" do
         @output_spec.generate(@input_spec, @rule_set.results).should ==
           [
-           ["", "", "", "", "1", "first name", "first name Cannot be blank", Rule::LEVEL_ERROR.to_s],
-           ["", "", "", "", "2", "family name", "family name Cannot be blank", Rule::LEVEL_ERROR.to_s],
-           ["", "", "", "", "3", "nickname", "nickname Cannot be blank", Rule::LEVEL_WARNING.to_s],
-           ["", "", "", "", "3 4", "nickname sex", "sex Must be 'M' or 'F'", Rule::LEVEL_ERROR.to_s],
+           ["", "", "", "", "1", "first name", "first name Cannot be blank", Rule::ERROR_LEVELS[:error].to_s],
+           ["", "", "", "", "2", "family name", "family name Cannot be blank", Rule::ERROR_LEVELS[:error].to_s],
+           ["", "", "", "", "3", "nickname", "nickname Cannot be blank", Rule::ERROR_LEVELS[:warning].to_s],
+           ["", "", "", "", "3 4", "nickname sex", "sex Must be 'M' or 'F'", Rule::ERROR_LEVELS[:error].to_s],
           ]
       end
     end
