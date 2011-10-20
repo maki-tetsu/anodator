@@ -115,6 +115,27 @@ describe Rule, "#new" do
       end
     end
   end
+
+  context "with multiple prerequisite" do 
+    before(:each) do 
+      @new_proc = lambda { 
+        v1 = Validator::PresenceValidator.new("1")
+        v2 = Validator::PresenceValidator.new("2")
+        @message = Message.new("'[[1::name]]' and '[[2::name]]' cannot be blank")
+        @validator = Validator::ComplexValidator.new(:validators => [v1, v2])
+        @prerequisites = [
+                          Validator::BlankValidator.new("3"),
+                          Validator::BlankValidator.new("4")
+                         ]
+        
+        Rule.new(["1", "2"], @message, @validator, @prerequisites, Rule::ERROR_LEVELS[:warning])
+      }
+    end
+
+    it "should not raise Error" do 
+      @new_proc.should_not raise_error
+    end
+  end
 end
 
 describe Rule, "#check" do
@@ -165,6 +186,62 @@ describe Rule, "#check" do
     end
 
     it { @rule.check.should be_nil }
+  end
+
+  context "with complex prerequisite" do
+    before(:each) do
+      @input_spec = InputSpec.new([
+                                   { :number => "1", :name => "item_1" },
+                                   { :number => "2", :name => "item_2" },
+                                   { :number => "3", :name => "item_3" },
+                                   { :number => "4", :name => "item_4" },
+                                  ])
+      v1 = Validator::PresenceValidator.new("1")
+      v2 = Validator::PresenceValidator.new("2")
+      @message = Message.new("'[[1::name]]' and '[[2::name]]' cannot be blank")
+      @validator = Validator::ComplexValidator.new(:validators => [v1, v2], :logic => Validator::ComplexValidator::LOGIC_AND)
+      @prerequisites = [
+                        Validator::BlankValidator.new("3"),
+                        Validator::BlankValidator.new("4")
+                       ]
+      @rule = Rule.new(["item_1", "2"], @message, @validator, @prerequisites)
+    end
+
+    context "when prerequisites matches and invalid" do
+      before(:each) do
+        @input_spec.source = ["1", "", "", ""]
+        Validator::Base.values = @input_spec
+      end
+
+      it { @rule.check.should be_a CheckResult }
+    end
+
+    context "when prerequisites matches and valid" do
+      before(:each) do
+        @input_spec.source = ["1", "2", "", ""]
+        Validator::Base.values = @input_spec
+      end
+
+      it { @rule.check.should be_nil }
+    end
+
+    context "when prerequisites not matches and valid" do
+      before(:each) do
+        @input_spec.source = ["1", "2", "", "4"]
+        Validator::Base.values = @input_spec
+      end
+
+      it { @rule.check.should be_nil }
+    end
+
+    context "when prerequisites not matches and invalid" do
+      before(:each) do
+        @input_spec.source = ["1", "2", "", "4"]
+        Validator::Base.values = @input_spec
+      end
+
+      it { @rule.check.should be_nil }
+    end
   end
 end
 

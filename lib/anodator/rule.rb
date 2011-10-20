@@ -75,6 +75,9 @@ module Anodator
       unless ERROR_LEVELS.values.include?(@level)
         raise ArgumentError.new("level must be #{ERROR_LEVEL_NAMES.join(", ")}.")
       end
+      if @prerequisite.is_a? Array
+        @prerequisite = Validator::ComplexValidator.new(:validators => @prerequisite)
+      end
     end
 
     # check values depend on prerequisite and validator
