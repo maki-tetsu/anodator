@@ -5,7 +5,7 @@ module Anodator
   module Validator
     class NumericValidator < Base
       valid_option_keys :only_integer, :greater_than, :greater_than_or_equal_to
-      valid_option_keys :less_than, :less_than_or_equal_to, :equal_to
+      valid_option_keys :less_than, :less_than_or_equal_to, :equal_to, :not_equal_to
       default_options :only_integer => false
 
       def validate
@@ -36,6 +36,8 @@ module Anodator
             return false unless value <= BigDecimal.new(configuration.to_s)
           when :equal_to
             return false unless value == BigDecimal.new(configuration.to_s)
+          when :not_equal_to
+            return false unless value != BigDecimal.new(configuration.to_s)
           end
         end
 

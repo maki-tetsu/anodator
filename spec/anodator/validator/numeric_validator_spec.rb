@@ -125,6 +125,22 @@ describe NumericValidator, ".new" do
       @new_proc.call.options[:equal_to].should == 10
     end
   end
+
+  context "with target expression and :not_equal_to" do
+    before(:each) do
+      @new_proc = lambda {
+        NumericValidator.new("1", :not_equal_to => 10)
+      }
+    end
+
+    it "should not raise error" do
+      @new_proc.should_not raise_error
+    end
+
+    it ":not_equal_to option must be exists" do
+      @new_proc.call.options[:not_equal_to].should == 10
+    end
+  end
 end
 
 describe NumericValidator, "#valid?" do
@@ -463,6 +479,60 @@ describe NumericValidator, "#valid?" do
       end
 
       it { @validator.should_not be_valid }
+    end
+  end
+
+  context "with target expression and :not_equal_to" do
+    before(:each) do
+      @validator = NumericValidator.new("1", :not_equal_to => 10)
+    end
+
+    context "values for valid maximum value" do
+      before(:each) do
+        Base.values = { "1" => "9" }
+      end
+
+      it { @validator.should be_valid }
+    end
+
+    context "values for valid maximum floating point value" do
+      before(:each) do
+        Base.values = { "1" => "9.9999999" }
+      end
+
+      it { @validator.should be_valid }
+    end
+
+    context "values for invalid equal value" do
+      before(:each) do
+        Base.values = { "1" => "10" }
+      end
+
+      it { @validator.should_not be_valid }
+    end
+
+    context "values for invalid equal floating point value" do
+      before(:each) do
+        Base.values = { "1" => "10.0" }
+      end
+
+      it { @validator.should_not be_valid }
+    end
+
+    context "values for valid minimum value" do
+      before(:each) do
+        Base.values = { "1" => "11" }
+      end
+
+      it { @validator.should be_valid }
+    end
+
+    context "values for valid minimum floating potin value" do
+      before(:each) do
+        Base.values = { "1" => "10.0000001" }
+      end
+
+      it { @validator.should be_valid }
     end
   end
 end

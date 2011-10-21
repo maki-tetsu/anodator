@@ -202,7 +202,7 @@ module Anodator
         description = row[1]
         target_expression = row[2].split(",")
         validator = validators[row[3]]
-        if row[4].include?(",")
+        if !row[4].nil? && row[4].include?(",")
           prerequisite = row[4].split(",").map do |validator_id|
             raise "Unknown validator identifier '#{validator_id}'" if validators[validator_id].nil?
             next validators[validator_id]
