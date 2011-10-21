@@ -46,7 +46,7 @@ module Anodator
     #     - target_values(for one error)
     #     - error_message(for one error)
     #     - error_level(for one error)
-    #     - error_count(for one error)
+    #     - error_count(for one data)
     #     - warning_count(for one data)
     #     - error_and_warning_count(for one data)
     # Arguments:
@@ -181,7 +181,7 @@ module Anodator
     #   - rule description(string)
     #   - target expression(column identification or column name)
     #   - validator identification
-    #   - prerequisite validator identification(allow blank)
+    #   - prerequisite validator identification(allow blank and multiple validator identification)
     #   - error level(ERROR or WARNING)
     #   - error message holder(string)
     # Return:
@@ -202,7 +202,14 @@ module Anodator
         description = row[1]
         target_expression = row[2].split(",")
         validator = validators[row[3]]
-        prerequisite = validators[row[4]]
+        if row[4].include?(",")
+          prerequisite = row[4].split(",").map do |validator_id|
+            raise "Unknown validator identifier '#{validator_id}'" if validators[validator_id].nil?
+            next validators[validator_id]
+          end
+        else
+          prerequisite = validators[row[4]]
+        end
         if validator.nil?
           raise "Unknown validator identifier '#{row[3]}'"
         end
