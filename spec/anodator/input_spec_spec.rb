@@ -228,8 +228,8 @@ describe InputSpec, "after generated" do
           }
         end
 
-        it "should raise UnknownTargetExpressionError" do
-          @proc.should_not raise_error UnknownTargetExpressionError
+        it "should raise error" do
+          @proc.should_not raise_error
         end
       end
 
