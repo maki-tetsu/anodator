@@ -17,7 +17,7 @@ module Anodator
       first = true
       header = nil
       spec = []
-      CSV.open(file_path, "r") do |row|
+      CSV.read(file_path).each do |row|
         # skip header
         if first
           header = row
@@ -61,7 +61,7 @@ module Anodator
       first = true
       header = nil
       spec = []
-      CSV.open(file_path, "r") do |row|
+      CSV.read(file_path).each do |row|
         # skip header
         if first
           header = row
@@ -122,7 +122,7 @@ module Anodator
       header = nil
       validators = { }
 
-      CSV.open(file_path, "r") do |row|
+      CSV.read(file_path).each do |row|
         # skip header
         if first
           header = row
@@ -191,7 +191,7 @@ module Anodator
       header = nil
       rule_set = RuleSet.new
 
-      CSV.open(file_path, "r") do |row|
+      CSV.read(file_path).each do |row|
         # skip header
         if first
           header = row

@@ -7,11 +7,11 @@ require "anodator/utils"
 
 include Anodator
 
-describe Utils, ".load_input_spec_from_csv_file" do 
-  context "read valid file" do 
-    before(:each) do 
+describe Utils, ".load_input_spec_from_csv_file" do
+  context "read valid file" do
+    before(:each) do
       @file = Tempfile.new(["input_spec", ".csv"])
-      
+
       # Header
       @file.puts(["id", "name", "type"].join(","))
       # values
@@ -27,18 +27,18 @@ describe Utils, ".load_input_spec_from_csv_file" do
       end
       @file.close
 
-      @proc = lambda { 
+      @proc = lambda {
         Utils.load_input_spec_from_csv_file(@file.path)
       }
     end
 
-    after(:each) do 
+    after(:each) do
       @file.unlink
     end
 
     it { @proc.should_not raise_error }
 
-    it "should have all items" do 
+    it "should have all items" do
       input_spec = @proc.call
       @values.each do |value|
         input_spec.spec_item_by_expression(value[:id]).should_not be_nil

@@ -36,7 +36,7 @@ describe Anodator::Validator::Base, "#new" do
     end
 
     it "should not raise ArgumentError" do
-      @new_proc.should_not raise_error ArgumentError
+      @new_proc.should_not raise_error
     end
 
     it "#allow_blank? should be false" do
@@ -53,8 +53,8 @@ describe Anodator::Validator::Base, "#new" do
         }
       end
 
-      it "should not raise ArgumentError" do
-        @new_proc.should_not raise_error ArgumentError
+      it "should not raise error" do
+        @new_proc.should_not raise_error
       end
 
       it "#allow_blank? should be true" do
@@ -70,8 +70,8 @@ describe Anodator::Validator::Base, "#new" do
         }
       end
 
-      it "should not raise ArgumentError" do
-        @new_proc.should_not raise_error ArgumentError
+      it "should not raise error" do
+        @new_proc.should_not raise_error
       end
 
       it "#allow_blank? should be false" do
@@ -87,8 +87,8 @@ describe Anodator::Validator::Base, "#new" do
         }
       end
 
-      it "should not raise ArgumentError" do
-        @new_proc.should_not raise_error ArgumentError
+      it "should not raise error" do
+        @new_proc.should_not raise_error
       end
 
       it "#description should be 'description message here.'" do
@@ -176,31 +176,31 @@ describe Anodator::Validator::Base, "set values for validation" do
   end
 
   context "for String value" do
-    it "should not raise argument error" do
+    it "should not raise error" do
       lambda {
         Anodator::Validator::Base.values = "value"
-      }.should_not raise_error ArgumentError
+      }.should_not raise_error
     end
   end
 
   context "for Array values" do
-    it "should not raise argument error" do
+    it "should not raise error" do
       lambda {
         Anodator::Validator::Base.values = [1, 2, 3]
-      }.should_not raise_error ArgumentError
+      }.should_not raise_error
     end
   end
 
   context "for Hash values" do
-    it "should not raise argument error" do
+    it "should not raise error" do
       lambda {
         Anodator::Validator::Base.values = { "1" => 1, "2" => 2, "3" => 3 }
-      }.should_not raise_error ArgumentError
+      }.should_not raise_error
     end
   end
 
   context "for another values what can respond to [] method" do
-    it "should not raise argument error" do
+    it "should not raise error" do
       lambda {
         class Dict
           def []
@@ -208,7 +208,7 @@ describe Anodator::Validator::Base, "set values for validation" do
           end
         end
         Anodator::Validator::Base.values = Dict.new
-      }.should_not raise_error ArgumentError
+      }.should_not raise_error
     end
   end
 end
