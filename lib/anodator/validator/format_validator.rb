@@ -4,8 +4,7 @@ require "anodator/validator/configuration_error"
 module Anodator
   module Validator
     class FormatValidator < Base
-      # ALL_ZENKAKU_REGEXP = /(?:\xEF\xBD[\xA1-\xBF]|\xEF\xBE[\x80-\x9F])|[\x20-\x7E]/
-      ALL_ZENKAKU_REGEXP = /(?:[\xEF\xBD\xA1-\xEF\xBD\xBF]|[\xEF\xBE\x80-\xEF\xBE\x9F])|[\x20-\x7E]/
+      ALL_ZENKAKU_REGEXP = /(?:\xEF\xBD[\xA1-\xBF]|\xEF\xBE[\x80-\x9F])|[\x20-\x7E]/
 
       valid_option_keys :format, :all_zenkaku
       default_options :all_zenkaku => false

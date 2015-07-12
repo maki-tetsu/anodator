@@ -56,7 +56,7 @@ module Anodator
     end
 
     def initialize(target_expressions, message, validator, prerequisite = nil, level = ERROR_LEVELS.values.sort.last, description = nil)
-      @target_expressions = [target_expressions].flatten
+      @target_expressions = target_expressions.to_a
       @message            = message
       @validator          = validator
       @prerequisite       = prerequisite
@@ -121,7 +121,7 @@ module Anodator
 
     def self.level_expression(level)
       if ERROR_LEVELS.values.include?(level)
-        return ERROR_LEVEL_NAMES[ERROR_LEVELS.key(level)]
+        return ERROR_LEVEL_NAMES[ERROR_LEVELS.index(level)]
       end
 
       return nil

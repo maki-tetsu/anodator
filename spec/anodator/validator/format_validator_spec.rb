@@ -20,7 +20,7 @@ describe Anodator::Validator::FormatValidator, ".new" do
     end
 
     it "should not raise error" do
-      @validator_new_proc.should_not raise_error
+      @validator_new_proc.should_not raise_error ArgumentError
     end
   end
 

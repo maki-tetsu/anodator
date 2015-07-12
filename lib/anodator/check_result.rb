@@ -5,7 +5,7 @@ module Anodator
     attr_reader :target_numbers, :message, :level
 
     def initialize(target_numbers, message, level)
-      @target_numbers = [target_numbers].flatten
+      @target_numbers = target_numbers.to_a
       @message        = message.to_s
       @level          = level
 

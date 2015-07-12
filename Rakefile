@@ -2,7 +2,6 @@
 
 require 'rubygems'
 require 'bundler'
-
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -39,7 +38,7 @@ end
 
 task :default => :spec
 
-require 'rdoc/task'
+require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
