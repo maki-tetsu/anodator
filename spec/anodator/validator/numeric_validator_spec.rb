@@ -58,7 +58,7 @@ describe NumericValidator, ".new" do
     end
 
     it ":greater_than option must be exists" do
-      @new_proc.call.options[:greater_than].should == 10
+      @new_proc.call.options[:greater_than].value.should == 10
     end
   end
 
@@ -74,7 +74,7 @@ describe NumericValidator, ".new" do
     end
 
     it ":greater_than_or_equal_to option must be exists" do
-      @new_proc.call.options[:greater_than_or_equal_to].should == 10
+      @new_proc.call.options[:greater_than_or_equal_to].value.should == 10
     end
   end
 
@@ -90,7 +90,7 @@ describe NumericValidator, ".new" do
     end
 
     it ":less_than option must be exists" do
-      @new_proc.call.options[:less_than].should == 10
+      @new_proc.call.options[:less_than].value.should == 10
     end
   end
 
@@ -106,7 +106,7 @@ describe NumericValidator, ".new" do
     end
 
     it ":less_than_or_equal_to option must be exists" do
-      @new_proc.call.options[:less_than_or_equal_to].should == 10
+      @new_proc.call.options[:less_than_or_equal_to].value.should == 10
     end
   end
 
@@ -122,7 +122,7 @@ describe NumericValidator, ".new" do
     end
 
     it ":equal_to option must be exists" do
-      @new_proc.call.options[:equal_to].should == 10
+      @new_proc.call.options[:equal_to].value.should == 10
     end
   end
 
@@ -138,7 +138,7 @@ describe NumericValidator, ".new" do
     end
 
     it ":not_equal_to option must be exists" do
-      @new_proc.call.options[:not_equal_to].should == 10
+      @new_proc.call.options[:not_equal_to].value.should == 10
     end
   end
 end
