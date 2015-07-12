@@ -15,21 +15,17 @@ module Anodator
         # format check
         date_regexp_holders
 
-        if !@options[:from].nil? && !@options[:from].is_a?(Date)
-          date = parse_date(@options[:from].to_s)
-          if date.nil?
-            raise ArgumentError.new("Invalid date expression '#{@options[:from]}'")
-          else
-            @options[:from] = date
-          end
-        end
-
-        if !@options[:to].nil? && !@options[:to].is_a?(Date)
-          date = parse_date(@options[:to].to_s)
-          if date.nil?
-            raise ArgumentError.new("Invalid date expression '#{@options[:to]}'")
-          else
-            @options[:to] = date
+        [:from, :to].each do |key|
+          if !@options[key].nil?
+            @options[key] = proxy_value(@options[key])
+            if @options[key].direct? && !@options[key].value.is_a?(Date)
+              date = parse_date(@options[key].value.to_s)
+              if date.nil?
+                raise ArgumentError.new("Invalid date expression '#{@options[key].value}'")
+              else
+                @options[key] = proxy_value(date)
+              end
+            end
           end
         end
       end
@@ -47,9 +43,9 @@ module Anodator
           @options.each do |option, configuration|
             case option
             when :from
-              return false if configuration > date
+              return false if parse_date(configuration.value) > date
             when :to
-              return false if configuration < date
+              return false if parse_date(configuration.value) < date
             end
           end
 
@@ -84,6 +80,7 @@ module Anodator
       #
       # not matched return nil
       def parse_date(date_expression)
+        return date_expression if date_expression.is_a? Date
         return nil unless match_data = date_regexp.match(date_expression)
 
         index = 0
