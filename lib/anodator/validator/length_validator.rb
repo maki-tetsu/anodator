@@ -6,6 +6,14 @@ module Anodator
     class LengthValidator < Base
       valid_option_keys :in, :maximum, :minimum, :is
 
+      def initialize(target_expression, options = { })
+        super(target_expression, options)
+
+        [:maximum, :minimum, :is].each do |key|
+          @options[key] = proxy_value(@options[key]) unless @options[key].nil?
+        end
+      end
+
       def validate
         length = target_value.split(//).size
 
@@ -22,11 +30,11 @@ module Anodator
               raise ConfigurationError.new(":in option value must be Range object")
             end
           when :maximum
-            return false if length > configuration.to_i
+            return false if length > configuration.value.to_i
           when :minimum
-            return false if length < configuration.to_i
+            return false if length < configuration.value.to_i
           when :is
-            return false if length != configuration.to_i
+            return false if length != configuration.value.to_i
           end
         end
 

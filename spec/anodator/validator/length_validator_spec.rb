@@ -35,7 +35,7 @@ describe LengthValidator, ".new" do
 
     it "should have :maximum option value" do
       validator = @new_proc.call
-      validator.options[:maximum].should == 10
+      validator.options[:maximum].value.should == 10
     end
   end
 
@@ -52,7 +52,7 @@ describe LengthValidator, ".new" do
 
     it "should have :minimum option value" do
       validator = @new_proc.call
-      validator.options[:minimum].should == 10
+      validator.options[:minimum].value.should == 10
     end
   end
 
@@ -69,7 +69,7 @@ describe LengthValidator, ".new" do
 
     it "should have :is option value" do
       validator = @new_proc.call
-      validator.options[:is].should == 10
+      validator.options[:is].value.should == 10
     end
   end
 

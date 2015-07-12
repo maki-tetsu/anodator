@@ -5,7 +5,7 @@ require File.join(File.dirname(__FILE__), "..", "lib", "anodator")
 include Anodator
 
 ### target data columns
-# ID, Family name, First name, Sex, Phone number, Birthday, Blood type
+# ID, Family name, First name, Sex, Phone number, Birthday, Blood type, Regist date
 input_spec_array_definition =
   [
    { :number => "1", :name => "ID", },
@@ -15,6 +15,7 @@ input_spec_array_definition =
    { :number => "5", :name => "Phone number", },
    { :number => "6", :name => "Birthday", },
    { :number => "7", :name => "Blood type", },
+   { :number => "8", :name => "Regist date", },
   ]
 input_spec = InputSpec.new(input_spec_array_definition)
 
@@ -87,6 +88,20 @@ rule_set << Rule.new("7",
                      Message.new("[[7::name]] must be 'A', 'B', 'O' or 'AB'.(([[7::value]]))"),
                      validator)
 
+## Regist date
+# Regist date must be YYYY-MM-DD format
+validator = Validator::DateValidator.new("8")
+rule_set << Rule.new("8",
+                     Message.new("[[8::name]] must be date expression.([[8::value]])"),
+                     validator)
+
+## Complex rule
+# Birthday < Regist date
+validator = Validator::DateValidator.new("6", :to => "[[8]]")
+rule_set << Rule.new("6",
+                     Message.new("[[6::name]] must be less than [[8::name]].([[6::value]] < [[8::value]])"),
+                     validator)
+
 ### output spec
 ## error list
 items =
@@ -106,16 +121,16 @@ checker = Checker.new(input_spec, rule_set, output_spec)
 ### target datas
 datas =
   [
-   ["1", "Murayama", "Honoka","F","08050967141","1971-10-01","B"],
-   ["2", "Izawa", "Kazuma", "M", "09070028635", "1968-03-24","O"],
-   ["3", "Hasebe", "Miyu", "F", "08087224562", "1991-01-21", "A"],
-   ["4", "Furusawa", "Eri", "F", "08017372898","1965-02-14", "O"],
-   ["5", "Hiramoto", "Yutaka", "M", "", "1986-09-14", "AB"],
-   ["6", "Matsuzaki", "Runa", "F", "", "1960-03-27", "O"],
-   ["7", "Inagaki", "Kouichi", "M", "", "1961-01-04", "B"],
-   ["8", "Kase", "Sueji", "", "", "1969-03-19", "B"],
-   ["9", "Kawanishi", "Hinako", "F", "08029628506", "1970-05-29", "B"],
-   ["10", "Sakurai", "Eijirou", "M", "", "1988-13-16", "A"],
+   ["1", "Murayama", "Honoka","F","08050967141","1971-10-01","B", "2014-12-31"],
+   ["2", "Izawa", "Kazuma", "M", "09070028635", "1968-03-24","O", "2014-12-31"],
+   ["3", "Hasebe", "Miyu", "F", "08087224562", "1991-01-21", "A", "2014-12-31"],
+   ["4", "Furusawa", "Eri", "F", "08017372898","1965-02-14", "O", "2014-12-31"],
+   ["5", "Hiramoto", "Yutaka", "M", "", "1986-09-14", "AB", "2014-12-31"],
+   ["6", "Matsuzaki", "Runa", "F", "", "1960-03-27", "O", "2014-12-31"],
+   ["7", "Inagaki", "Kouichi", "M", "", "1961-01-04", "B", "2014-12-31"],
+   ["8", "Kase", "Sueji", "", "", "1969-03-19", "B", "2014-12-31"],
+   ["9", "Kawanishi", "Hinako", "F", "08029628506", "1970-05-29", "B", "2014-12-31"],
+   ["10", "Sakurai", "Eijirou", "M", "", "2015-01-01", "A", "2014-12-31"],
   ]
 
 ### run check for all datas

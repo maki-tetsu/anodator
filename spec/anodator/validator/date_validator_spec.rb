@@ -91,11 +91,11 @@ describe DateValidator, ".new" do
       end
 
       it "#from should be 1980-01-25" do
-        @new_proc.call.from.should == Date.new(1980, 1, 25)
+        @new_proc.call.from.value.should == Date.new(1980, 1, 25)
       end
 
       it "#to should be 2011-01-01" do
-        @new_proc.call.to.should == Date.new(2011, 1, 1)
+        @new_proc.call.to.value.should == Date.new(2011, 1, 1)
       end
     end
   end
@@ -112,7 +112,7 @@ describe DateValidator, ".new" do
     end
 
     it "#from should be date object" do
-      @new_proc.call.from.should be_a Date
+      @new_proc.call.from.value.should be_a Date
     end
   end
 
@@ -128,11 +128,11 @@ describe DateValidator, ".new" do
     end
 
     it "#from should be date object" do
-      @new_proc.call.from.should be_a Date
+      @new_proc.call.from.value.should be_a Date
     end
 
     it "#from should be same date for string expression" do
-      @new_proc.call.from.should == Date.new(2011, 1, 1)
+      @new_proc.call.from.value.should == Date.new(2011, 1, 1)
     end
   end
 
@@ -160,7 +160,7 @@ describe DateValidator, ".new" do
     end
 
     it "#to should be date object" do
-      @new_proc.call.to.should be_a Date
+      @new_proc.call.to.value.should be_a Date
     end
   end
 
@@ -176,11 +176,11 @@ describe DateValidator, ".new" do
     end
 
     it "#to should be date object" do
-      @new_proc.call.to.should be_a Date
+      @new_proc.call.to.value.should be_a Date
     end
 
     it "#to should be same date for string expression" do
-      @new_proc.call.to.should == Date.new(2011, 1, 1)
+      @new_proc.call.to.value.should == Date.new(2011, 1, 1)
     end
   end
 

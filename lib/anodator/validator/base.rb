@@ -1,3 +1,5 @@
+require "anodator/validator/value_proxy"
+
 module Anodator
   module Validator
     # +Validator::Base+ is basic class for validations
@@ -146,6 +148,10 @@ module Anodator
         return @@values[target].to_s
       end
 
+      def argument_value_at(name_or_index)
+        return @@values[name_or_index].to_s
+      end
+
       def allow_blank?
         return @options[:allow_blank]
       end
@@ -153,6 +159,11 @@ module Anodator
       def description
         return @options[:description]
       end
+
+      def proxy_value(target)
+        ValueProxy.new(target, self)
+      end
+      private :proxy_value
 
       def to_s(level = 4, step = 2)
         (" " * level) + "- #{self.class}(#{self.description})"

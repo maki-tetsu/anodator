@@ -8,6 +8,16 @@ module Anodator
       valid_option_keys :less_than, :less_than_or_equal_to, :equal_to, :not_equal_to
       default_options :only_integer => false
 
+      def initialize(target_expression, options = { })
+        super(target_expression, options)
+
+        [:greater_than, :greater_than_or_equal_to,
+          :less_than, :less_than_or_equal_to,
+          :equal_to, :not_equal_to].each do |key|
+          @options[key] = proxy_value(@options[key]) unless @options[key].nil?
+        end
+      end
+
       def validate
         if allow_blank?
           return true if target_value.split(//).size.zero?
@@ -27,17 +37,17 @@ module Anodator
         @options.each do |option, configuration|
           case option
           when :greater_than
-            return false unless value > BigDecimal.new(configuration.to_s)
+            return false unless value > BigDecimal.new(configuration.value.to_s)
           when :greater_than_or_equal_to
-            return false unless value >= BigDecimal.new(configuration.to_s)
+            return false unless value >= BigDecimal.new(configuration.value.to_s)
           when :less_than
-            return false unless value < BigDecimal.new(configuration.to_s)
+            return false unless value < BigDecimal.new(configuration.value.to_s)
           when :less_than_or_equal_to
-            return false unless value <= BigDecimal.new(configuration.to_s)
+            return false unless value <= BigDecimal.new(configuration.value.to_s)
           when :equal_to
-            return false unless value == BigDecimal.new(configuration.to_s)
+            return false unless value == BigDecimal.new(configuration.value.to_s)
           when :not_equal_to
-            return false unless value != BigDecimal.new(configuration.to_s)
+            return false unless value != BigDecimal.new(configuration.value.to_s)
           end
         end
 
