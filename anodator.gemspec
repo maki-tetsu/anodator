@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{anodator}
-  s.version = "0.0.4"
+  s.version = "0.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
-  s.date = %q{2015-07-12}
+  s.date = %q{2015-08-10}
   s.description = %q{anodator is Anonymous Data Validator.}
   s.email = %q{tim.makino at gmail.com}
   s.extra_rdoc_files = [
@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "anodator.gemspec",
     "example/example_01.rb",
     "lib/anodator.rb",
     "lib/anodator/anodator_error.rb",
