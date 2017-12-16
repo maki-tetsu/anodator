@@ -5,8 +5,7 @@ anodator はテキストデータのチェックを支援するライブラリ�
 出力結果は二次元配列として出力されます。
 anodator はチェックに際し、受け取るデータの仕様、チェックするためのルールセット、
 および、出力時の仕様を受け取ることで、任意形式の入出力に対応します。
-通常は Ruby コード上で各種仕様の受け渡し等を実施しますが、簡易的な設定方法も
-提供されます。
+通常は Ruby コード上で各種仕様の受け渡し等を実施しますが、簡易的な設定方法も提供されます。
 
 == インストール方法
 
@@ -28,6 +27,5 @@ Tetsuhisa MAKINO <tim.makino at gmail.com>
 
 == Copyright
 
-Copyright (c) 2011 Tetsuhisa MAKINO. See LICENSE.txt for
+Copyright (c) 2017 Tetsuhisa MAKINO. See LICENSE.txt for
 further details.
-

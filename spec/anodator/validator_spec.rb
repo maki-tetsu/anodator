@@ -3,14 +3,13 @@ require "spec_helper"
 # Anodator::Validator
 require "anodator/validator"
 
-describe "require validators" do
-  it { Anodator::Validator::Base.should_not be_nil }
-  it { Anodator::Validator::BlankValidator.should_not be_nil }
-  it { Anodator::Validator::ComplexValidator.should_not be_nil }
-  it { Anodator::Validator::FormatValidator.should_not be_nil }
-  it { Anodator::Validator::InclusionValidator.should_not be_nil }
-  it { Anodator::Validator::LengthValidator.should_not be_nil }
-  it { Anodator::Validator::NumericValidator.should_not be_nil }
-  it { Anodator::Validator::PresenceValidator.should_not be_nil }
+RSpec.describe "require validators" do
+  it { expect(Anodator::Validator::Base).not_to be_nil }
+  it { expect(Anodator::Validator::BlankValidator).not_to be_nil }
+  it { expect(Anodator::Validator::ComplexValidator).not_to be_nil }
+  it { expect(Anodator::Validator::FormatValidator).not_to be_nil }
+  it { expect(Anodator::Validator::InclusionValidator).not_to be_nil }
+  it { expect(Anodator::Validator::LengthValidator).not_to be_nil }
+  it { expect(Anodator::Validator::NumericValidator).not_to be_nil }
+  it { expect(Anodator::Validator::PresenceValidator).not_to be_nil }
 end
-

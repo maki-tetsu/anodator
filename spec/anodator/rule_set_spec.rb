@@ -5,17 +5,17 @@ require "anodator/rule_set"
 
 include Anodator
 
-describe RuleSet, ".new" do
+RSpec.describe RuleSet, ".new" do
   context "with no parameters" do
     it "should not raise error" do
-      lambda {
+      expect {
         RuleSet.new
-      }.should_not raise_error
+      }.not_to raise_error
     end
   end
 end
 
-describe RuleSet, "after generated" do
+RSpec.describe RuleSet, "after generated" do
   before(:each) do
     # preparation
     @input_spec = InputSpec.new([
@@ -69,7 +69,7 @@ describe RuleSet, "after generated" do
     end
 
     it "should have all rules" do
-      @rule_set.instance_eval("@rules.count").should == 6
+      expect(@rule_set.instance_eval("@rules.count")).to be == 6
     end
   end
 
@@ -103,7 +103,7 @@ describe RuleSet, "after generated" do
     end
 
     it "should have all rules" do
-      @rule_set.instance_eval("@rules.count").should == 6
+      expect(@rule_set.instance_eval("@rules.count")).to be == 6
     end
   end
 
@@ -142,12 +142,12 @@ describe RuleSet, "after generated" do
     end
 
     it "should not raise error" do
-      @proc.should_not raise_error
+      expect(@proc).not_to raise_error
     end
 
     it "should have results" do
       @proc.call
-      @rule_set.instance_eval("@results.count").should_not be_zero
+      expect(@rule_set.instance_eval("@results.count")).not_to be_zero
     end
   end
 
@@ -184,7 +184,7 @@ describe RuleSet, "after generated" do
     end
 
     it "should have results count 4" do
-      @rule_set.results.count.should == 4
+      expect(@rule_set.results.count).to be == 4
     end
   end
 end

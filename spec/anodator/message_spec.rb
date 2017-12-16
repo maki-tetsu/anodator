@@ -6,12 +6,12 @@ require "anodator/input_spec"
 
 include Anodator
 
-describe Message, ".new" do
+RSpec.describe Message, ".new" do
   context "with no parameters" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Message.new
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
@@ -23,12 +23,12 @@ describe Message, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "#template should be provided string" do
       @message = @new_proc.call
-      @message.template.should == "An error occured!!"
+      expect(@message.template).to be == "An error occured!!"
     end
   end
 
@@ -41,17 +41,17 @@ describe Message, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "#template should be provided string" do
       @message = @new_proc.call
-      @message.template.should == @template
+      expect(@message.template).to be == @template
     end
   end
 end
 
-describe Message, "#expand" do
+RSpec.describe Message, "#expand" do
   before(:each) do
     # create input spec and data source
     @input_spec = InputSpec.new([
@@ -73,11 +73,11 @@ describe Message, "#expand" do
     end
 
     it "should not raise error" do
-      @proc.should_not raise_error
+      expect(@proc).not_to raise_error
     end
 
     it "should equal replacement values" do
-      @proc.call.should ==
+      expect(@proc.call).to be ==
         "An error occured item_1(1) must not be '1'"
     end
   end
@@ -91,7 +91,7 @@ describe Message, "#expand" do
       end
 
       it "should raise UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
   end
@@ -105,7 +105,7 @@ describe Message, "#expand" do
       end
 
       it "should raise UnknownMessageAttributeError" do
-        @proc.should raise_error UnknownMessageAttributeError
+        expect(@proc).to raise_error UnknownMessageAttributeError
       end
     end
   end

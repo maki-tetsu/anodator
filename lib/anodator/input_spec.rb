@@ -125,7 +125,7 @@ module Anodator
     def [](target_expression)
       raise SourceDataNotProvidedError.new if @source.nil?
 
-      if target_expression.is_a? Fixnum
+      if target_expression.is_a? Integer
         return value_at(target_expression)
       elsif /^CALC::(.+)$/.match target_expression
         return value_by_calculation($1)
@@ -171,7 +171,7 @@ module Anodator
     private :spec_items_by_calculation
 
     def spec_item_by_expression(target_expression)
-      if target_expression.is_a? Fixnum
+      if target_expression.is_a? Integer
         return spec_item_at(target_expression)
       elsif /^CALC::(.+)$/.match target_expression
         return spec_items_by_calculation($1)

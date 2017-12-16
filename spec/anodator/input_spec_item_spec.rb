@@ -5,52 +5,52 @@ require "anodator/input_spec_item"
 
 include Anodator
 
-describe InputSpecItem, ".new" do
+RSpec.describe InputSpecItem, ".new" do
   context "with no parameter" do
     it "should raise error ArgumentError" do
-      lambda {
+      expect {
         InputSpecItem.new
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with only number parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         InputSpecItem.new("1")
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with blank number parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         InputSpecItem.new("", "item_1")
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with nil number parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         InputSpecItem.new(nil, "item_1")
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with blank name parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         InputSpecItem.new("1", "")
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with nil name parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         InputSpecItem.new("1", nil)
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
@@ -62,7 +62,7 @@ describe InputSpecItem, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -70,9 +70,9 @@ describe InputSpecItem, ".new" do
         @input_spec_item = @new_proc.call
       end
 
-      it { @input_spec_item.number.should == "1" }
-      it { @input_spec_item.name.should == "item_1" }
-      it { @input_spec_item.type.should == "STRING" }
+      it { expect(@input_spec_item.number).to be == "1" }
+      it { expect(@input_spec_item.name).to be == "item_1" }
+      it { expect(@input_spec_item.type).to be == "STRING" }
     end
   end
 
@@ -84,7 +84,7 @@ describe InputSpecItem, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -92,9 +92,9 @@ describe InputSpecItem, ".new" do
         @input_spec_item = @new_proc.call
       end
 
-      it { @input_spec_item.number.should == "1" }
-      it { @input_spec_item.name.should == "item_1" }
-      it { @input_spec_item.type.should == "NUMERIC" }
+      it { expect(@input_spec_item.number).to be == "1" }
+      it { expect(@input_spec_item.name).to be == "item_1" }
+      it { expect(@input_spec_item.type).to be == "NUMERIC" }
     end
   end
 end

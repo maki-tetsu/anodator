@@ -5,12 +5,12 @@ require "anodator/validator/date_validator"
 
 include Anodator::Validator
 
-describe DateValidator, ".new" do
+RSpec.describe DateValidator, ".new" do
   context "with no parameters" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         DateValidator.new
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
@@ -22,10 +22,10 @@ describe DateValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
-    it { @new_proc.call.format.should == "YYYY-MM-DD" }
+    it { expect(@new_proc.call.format).to be == "YYYY-MM-DD" }
   end
 
   context "with target expression and :format option" do
@@ -37,7 +37,7 @@ describe DateValidator, ".new" do
       end
 
       it "should not raise error" do
-        @new_proc.should_not raise_error
+        expect(@new_proc).not_to raise_error
       end
 
       context "and :from same format" do
@@ -48,7 +48,7 @@ describe DateValidator, ".new" do
         end
 
         it "should not raise error" do
-          @new_proc.should_not raise_error
+          expect(@new_proc).not_to raise_error
         end
       end
     end
@@ -61,7 +61,7 @@ describe DateValidator, ".new" do
       end
 
       it "should raise ArgumentError" do
-        @new_proc.should raise_error ArgumentError
+        expect(@new_proc).to raise_error ArgumentError
       end
     end
 
@@ -73,7 +73,7 @@ describe DateValidator, ".new" do
       end
 
       it "should raise ArgumentError" do
-        @new_proc.should raise_error ArgumentError
+        expect(@new_proc).to raise_error ArgumentError
       end
     end
 
@@ -87,15 +87,15 @@ describe DateValidator, ".new" do
       end
 
       it "should not raise error" do
-        @new_proc.should_not raise_error
+        expect(@new_proc).not_to raise_error
       end
 
       it "#from should be 1980-01-25" do
-        @new_proc.call.from.value.should == Date.new(1980, 1, 25)
+        expect(@new_proc.call.from.value).to be == Date.new(1980, 1, 25)
       end
 
       it "#to should be 2011-01-01" do
-        @new_proc.call.to.value.should == Date.new(2011, 1, 1)
+        expect(@new_proc.call.to.value).to be == Date.new(2011, 1, 1)
       end
     end
   end
@@ -108,11 +108,11 @@ describe DateValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "#from should be date object" do
-      @new_proc.call.from.value.should be_a Date
+      expect(@new_proc.call.from.value).to be_a Date
     end
   end
 
@@ -124,15 +124,15 @@ describe DateValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "#from should be date object" do
-      @new_proc.call.from.value.should be_a Date
+      expect(@new_proc.call.from.value).to be_a Date
     end
 
     it "#from should be same date for string expression" do
-      @new_proc.call.from.value.should == Date.new(2011, 1, 1)
+      expect(@new_proc.call.from.value).to be == Date.new(2011, 1, 1)
     end
   end
 
@@ -144,7 +144,7 @@ describe DateValidator, ".new" do
     end
 
     it "should raise ArgumentError" do
-      @new_proc.should raise_error ArgumentError
+      expect(@new_proc).to raise_error ArgumentError
     end
   end
 
@@ -156,11 +156,11 @@ describe DateValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "#to should be date object" do
-      @new_proc.call.to.value.should be_a Date
+      expect(@new_proc.call.to.value).to be_a Date
     end
   end
 
@@ -172,15 +172,15 @@ describe DateValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "#to should be date object" do
-      @new_proc.call.to.value.should be_a Date
+      expect(@new_proc.call.to.value).to be_a Date
     end
 
     it "#to should be same date for string expression" do
-      @new_proc.call.to.value.should == Date.new(2011, 1, 1)
+      expect(@new_proc.call.to.value).to be == Date.new(2011, 1, 1)
     end
   end
 
@@ -192,159 +192,149 @@ describe DateValidator, ".new" do
     end
 
     it "should raise ArgumentError" do
-      @new_proc.should raise_error ArgumentError
+      expect(@new_proc).to raise_error ArgumentError
     end
   end
 end
 
-describe DateValidator, "#valid?" do
+RSpec.describe DateValidator, "#valid?" do
   context "with only target expression" do
-    before(:each) do
-      @validator = DateValidator.new("1")
-    end
+    let(:validator) { DateValidator.new("1") }
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-34-42" }
+        Anodator::Validator::Base.values = { "1" => "2011-34-42" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "valid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-04-02" }
+        Anodator::Validator::Base.values = { "1" => "2011-04-02" }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
   end
 
   context "with target expression and :from option" do
-    before(:each) do
-      @validator = DateValidator.new("1", :from => "2011-04-01")
-    end
+    let(:validator) { DateValidator.new("1", :from => "2011-04-01") }
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-34-42" }
+        Anodator::Validator::Base.values = { "1" => "2011-34-42" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "invalid date by :from option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-03-31" }
+        Anodator::Validator::Base.values = { "1" => "2011-03-31" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "valid date by :from option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-04-01" }
+        Anodator::Validator::Base.values = { "1" => "2011-04-01" }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
   end
 
   context "with target expression and :to option" do
-    before(:each) do
-      @validator = DateValidator.new("1", :to => "2011-04-01")
-    end
+    let(:validator) { DateValidator.new("1", :to => "2011-04-01") }
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-34-42" }
+        Anodator::Validator::Base.values = { "1" => "2011-34-42" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "invalid date by :to option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-04-02" }
+        Anodator::Validator::Base.values = { "1" => "2011-04-02" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "valid date by :to option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-04-01" }
+        Anodator::Validator::Base.values = { "1" => "2011-04-01" }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
   end
 
   context "with target expression and :to and :from option" do
-    before(:each) do
-      @validator = DateValidator.new("1", :from => "2010-04-01", :to => "2011-03-31")
-    end
+    let(:validator) { DateValidator.new("1", :from => "2010-04-01", :to => "2011-03-31") }
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-34-42" }
+        Anodator::Validator::Base.values = { "1" => "2011-34-42" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "invalid date by :from option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2010-03-31" }
+        Anodator::Validator::Base.values = { "1" => "2010-03-31" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "invalid date by :to option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-04-01" }
+        Anodator::Validator::Base.values = { "1" => "2011-04-01" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "valid date by :from and :to option" do
       before(:each) do
-        Validator::Base.values = { "1" => "2010-05-31" }
+        Anodator::Validator::Base.values = { "1" => "2010-05-31" }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
   end
 
   context "with target expression with :allow_blank => true" do
-    before(:each) do
-      @validator = DateValidator.new("1", :allow_blank => true)
-    end
+    let(:validator) { DateValidator.new("1", :allow_blank => true) }
 
     context "invalid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-34-42" }
+        Anodator::Validator::Base.values = { "1" => "2011-34-42" }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "valid date expression" do
       before(:each) do
-        Validator::Base.values = { "1" => "2011-04-02" }
+        Anodator::Validator::Base.values = { "1" => "2011-04-02" }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "blank value" do
       before(:each) do
-        Validator::Base.values = { "1" => "" }
+        Anodator::Validator::Base.values = { "1" => "" }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
   end
 end

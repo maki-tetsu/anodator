@@ -6,12 +6,12 @@ require "anodator/validator/complex_validator"
 
 include Anodator::Validator
 
-describe ComplexValidator, ".new" do
+RSpec.describe ComplexValidator, ".new" do
   context "with no paramerters" do
     it "should not raise error" do
-      lambda {
+      expect {
         ComplexValidator.new
-      }.should_not raise_error
+      }.not_to raise_error
     end
   end
 
@@ -26,12 +26,12 @@ describe ComplexValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it ":logic should be ComplexValidator::LOGIC_AND" do
       complex_validator = @new_proc.call
-      complex_validator.options[:logic].should == ComplexValidator::LOGIC_AND
+      expect(complex_validator.options[:logic]).to be == ComplexValidator::LOGIC_AND
     end
   end
 
@@ -47,17 +47,17 @@ describe ComplexValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it ":logic should be ComplexValidator::LOGIC_OR" do
       complex_validator = @new_proc.call
-      complex_validator.options[:logic].should == ComplexValidator::LOGIC_OR
+      expect(complex_validator.options[:logic]).to be == ComplexValidator::LOGIC_OR
     end
   end
 end
 
-describe ComplexValidator, "#valid?" do
+RSpec.describe ComplexValidator, "#valid?" do
   context "no paramerters" do
     before(:each) do
       @validator = ComplexValidator.new
@@ -70,20 +70,19 @@ describe ComplexValidator, "#valid?" do
     end
 
     it "should raise error ConfigurationError" do
-      lambda {
+      expect {
         @validator.valid?
-      }.should raise_error ConfigurationError
+      }.to raise_error ConfigurationError
     end
   end
 
   context "only :validators option" do
-    before(:each) do
-      @validator = ComplexValidator.new
+    let(:validator) {
       validators = []
       validators << PresenceValidator.new("1")
       validators << PresenceValidator.new("3")
-      @validator = ComplexValidator.new(:validators => validators)
-    end
+      ComplexValidator.new(:validators => validators)
+    }
 
     context "for values are valid" do
       before(:each) do
@@ -94,7 +93,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "for values one valid, the other invalid" do
@@ -106,7 +105,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "for values are invalid at all values" do
@@ -118,18 +117,17 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 
   context ":validators and :logic OR option" do
-    before(:each) do
+    let(:validator) {
       validators = []
       validators << PresenceValidator.new("1")
       validators << PresenceValidator.new("3")
-      @validator = ComplexValidator.new(:validators => validators,
-                                        :logic => ComplexValidator::LOGIC_OR)
-    end
+      ComplexValidator.new(:validators => validators, :logic => ComplexValidator::LOGIC_OR)
+    }
 
     context "for values are valid" do
       before(:each) do
@@ -140,7 +138,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "for values one valid, the other invalid" do
@@ -152,7 +150,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "for values are invalid at all values" do
@@ -164,12 +162,12 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 
   context "for nested complex validator(A && (B || C))" do
-    before(:each) do
+    let(:validator) {
       validators1, validators2 = [], []
       validators2 << PresenceValidator.new("A")
       validators1 << PresenceValidator.new("B")
@@ -177,9 +175,8 @@ describe ComplexValidator, "#valid?" do
       validator1 = ComplexValidator.new(:validators => validators1,
                                         :logic => ComplexValidator::LOGIC_OR)
       validators2 << validator1
-      @validator = ComplexValidator.new(:validators => validators2,
-                                        :logic => ComplexValidator::LOGIC_AND)
-    end
+      ComplexValidator.new(:validators => validators2, :logic => ComplexValidator::LOGIC_AND)
+    }
 
     context "for A(1),  B(1), C(1)" do
       before(:each) do
@@ -190,7 +187,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "for A(),  B(1), C(1)" do
@@ -202,7 +199,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "for A(),  B(), C(1)" do
@@ -214,7 +211,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "for A(1),  B(), C()" do
@@ -226,7 +223,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "for A(1),  B(), C(1)" do
@@ -238,7 +235,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "for A(1),  B(1), C()" do
@@ -250,7 +247,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "for A(),  B(), C()" do
@@ -262,7 +259,7 @@ describe ComplexValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 end

@@ -5,7 +5,7 @@ require "anodator/output_spec"
 
 include Anodator
 
-describe OutputSpec, ".new" do
+RSpec.describe OutputSpec, ".new" do
   context "with no paramerters" do
     before(:each) do
       @new_proc = lambda {
@@ -14,7 +14,7 @@ describe OutputSpec, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -23,15 +23,15 @@ describe OutputSpec, ".new" do
       end
 
       it "#items should be empty" do
-        @output_spec.items.should be_empty
+        expect(@output_spec.items).to be_empty
       end
 
       it "#target should be OutputSpec::TARGET_ERROR by default" do
-        @output_spec.target.should == OutputSpec::TARGET_ERROR
+        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
       end
 
       it "#include_no_error should be false by default" do
-        @output_spec.include_no_error.should be_false
+        expect(@output_spec.include_no_error).to be_falsey
       end
     end
   end
@@ -50,7 +50,7 @@ describe OutputSpec, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -59,15 +59,15 @@ describe OutputSpec, ".new" do
       end
 
       it "#items should not be empty" do
-        @output_spec.items.should_not be_empty
+        expect(@output_spec.items).not_to be_empty
       end
 
       it "#target should be OutputSpec::TARGET_ERROR by default" do
-        @output_spec.target.should == OutputSpec::TARGET_ERROR
+        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
       end
 
       it "#include_no_error should be false by default" do
-        @output_spec.include_no_error.should be_false
+        expect(@output_spec.include_no_error).to be_falsey
       end
     end
   end
@@ -85,7 +85,7 @@ describe OutputSpec, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -94,15 +94,15 @@ describe OutputSpec, ".new" do
       end
 
       it "#items should not be empty" do
-        @output_spec.items.should_not be_empty
+        expect(@output_spec.items).not_to be_empty
       end
 
       it "#target should be OutputSpec::TARGET_ERROR by default" do
-        @output_spec.target.should == OutputSpec::TARGET_ERROR
+        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
       end
 
       it "#include_no_error should be false by default" do
-        @output_spec.include_no_error.should be_false
+        expect(@output_spec.include_no_error).to be_falsey
       end
     end
   end
@@ -121,7 +121,7 @@ describe OutputSpec, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -130,15 +130,15 @@ describe OutputSpec, ".new" do
       end
 
       it "#items should not be empty" do
-        @output_spec.items.should_not be_empty
+        expect(@output_spec.items).not_to be_empty
       end
 
       it "#target should be OutputSpec::TARGET_DATA" do
-        @output_spec.target.should == OutputSpec::TARGET_DATA
+        expect(@output_spec.target).to be == OutputSpec::TARGET_DATA
       end
 
       it "#include_no_error should be false by default" do
-        @output_spec.include_no_error.should be_false
+        expect(@output_spec.include_no_error).to be_falsey
       end
     end
   end
@@ -161,7 +161,7 @@ describe OutputSpec, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -170,21 +170,21 @@ describe OutputSpec, ".new" do
       end
 
       it "#items should not be empty" do
-        @output_spec.items.should_not be_empty
+        expect(@output_spec.items).not_to be_empty
       end
 
       it "#target should be OutputSpec::TARGET_ERROR" do
-        @output_spec.target.should == OutputSpec::TARGET_ERROR
+        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
       end
 
       it "#include_no_error should be true" do
-        @output_spec.include_no_error.should be_true
+        expect(@output_spec.include_no_error).to be_truthy
       end
     end
   end
 end
 
-describe OutputSpec, "#generate" do
+RSpec.describe OutputSpec, "#generate" do
   before(:each) do
     # preparation
     @input_spec = InputSpec.new([
@@ -235,7 +235,7 @@ describe OutputSpec, "#generate" do
       end
 
       it "should generate error list datas" do
-        @output_spec.generate(@input_spec, @rule_set.results).should ==
+        expect(@output_spec.generate(@input_spec, @rule_set.results)).to be ==
           [
            ["", "", "", "", "1", "first name", "first name Cannot be blank", Rule::ERROR_LEVELS[:error].to_s],
            ["", "", "", "", "2", "family name", "family name Cannot be blank", Rule::ERROR_LEVELS[:error].to_s],
@@ -265,7 +265,7 @@ describe OutputSpec, "#generate" do
       end
 
       it "should generate list data" do
-        @output_spec.generate(@input_spec, @rule_set.results).should ==
+        expect(@output_spec.generate(@input_spec, @rule_set.results)).to be ==
           [
            ["", "", "", "", "", "", "", "", "3", "1", "4"],
           ]
@@ -297,7 +297,7 @@ describe OutputSpec, "#generate" do
       end
 
       it "should generate one data" do
-        @output_spec.generate(@input_spec, @rule_set.results).should ==
+        expect(@output_spec.generate(@input_spec, @rule_set.results)).to be ==
           [
            ["Tetsuhisa", "MAKINO", "makitetsu", "M", "", "", "", ""]
           ]
@@ -321,7 +321,7 @@ describe OutputSpec, "#generate" do
       end
 
       it "should be empty" do
-        @output_spec.generate(@input_spec, @rule_set.results).should be_empty
+        expect(@output_spec.generate(@input_spec, @rule_set.results)).to be_empty
       end
     end
 
@@ -345,7 +345,7 @@ describe OutputSpec, "#generate" do
       end
 
       it "should not raise error" do
-        @output_spec.generate(@input_spec, @rule_set.results).should ==
+        expect(@output_spec.generate(@input_spec, @rule_set.results)).to be ==
           [
            ["Tetsuhisa", "MAKINO", "makitetsu", "M", "", "", "", "", "0", "0", "0"],
           ]

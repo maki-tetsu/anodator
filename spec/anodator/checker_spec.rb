@@ -6,7 +6,7 @@ require "anodator/checker"
 include Anodator
 include Anodator::Validator
 
-describe Checker, ".new" do
+RSpec.describe Checker, ".new" do
   before(:each) do
     @input_spec = InputSpec.new([
                                  { :number => "0", :name => "ID" },
@@ -69,38 +69,38 @@ describe Checker, ".new" do
 
   context "with no parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Checker.new
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with only input_spec" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Checker.new(@input_spec)
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with input_spec and rule_set" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Checker.new(@input_spec, @rule_set)
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with input_spec, rule_set and default_output_spec" do
     it "should not raise error" do
-      lambda {
+      expect {
         Checker.new(@input_spec, @rule_set, @error_list_output_spec)
-      }.should_not raise_error
+      }.not_to raise_error
     end
   end
 end
 
-describe "on after creation" do
+RSpec.describe "on after creation" do
   before(:each) do
     @input_spec = InputSpec.new([
                                  { :number => "0", :name => "ID" },
@@ -171,7 +171,7 @@ describe "on after creation" do
     end
 
     it "should not raise error" do
-      @proc.should_not raise_error
+      expect(@proc).not_to raise_error
     end
 
     context "after process" do
@@ -180,7 +180,7 @@ describe "on after creation" do
       end
 
       it "should have 2 output_specs" do
-        @checker.instance_eval("@output_specs.size").should == 2
+        expect(@checker.instance_eval("@output_specs.size")).to be == 2
       end
     end
   end
@@ -197,10 +197,10 @@ describe "on after creation" do
         }
       end
 
-      it { @proc.should_not raise_error }
+      it { expect(@proc).not_to raise_error }
 
       it "should return 2 outputs" do
-        @proc.call.size.should == 2
+        expect(@proc.call.size).to be == 2
       end
     end
 
@@ -211,10 +211,10 @@ describe "on after creation" do
         }
       end
 
-      it { @proc.should_not raise_error }
+      it { expect(@proc).not_to raise_error }
 
       it "should return 2 outputs" do
-        @proc.call.size.should == 2
+        expect(@proc.call.size).to be == 2
       end
     end
   end
@@ -228,11 +228,11 @@ describe "on after creation" do
       end
 
       it "should raise InvalidConfiguration" do
-        lambda {
+        expect {
           Checker.new(@input_spec,
                       @rule_set,
                       @error_list_output_spec, true)
-        }.should raise_error InvalidConfiguration
+        }.to raise_error InvalidConfiguration
       end
     end
 
@@ -242,11 +242,11 @@ describe "on after creation" do
       end
 
       it "should raise InvalidConfiguration" do
-        lambda {
+        expect {
           Checker.new(@input_spec,
                       @rule_set,
                       @invalid_output_spec, true)
-        }.should raise_error InvalidConfiguration
+        }.to raise_error InvalidConfiguration
       end
     end
   end
@@ -263,10 +263,10 @@ describe "on after creation" do
         }
       end
 
-      it { @proc.should_not raise_error }
+      it { expect(@proc).not_to raise_error }
 
       it "should return 2 outputs" do
-        @proc.call.should be_a String
+        expect(@proc.call).to be_a String
       end
     end
   end

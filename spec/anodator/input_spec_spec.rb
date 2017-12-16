@@ -5,17 +5,17 @@ require "anodator/input_spec"
 
 include Anodator
 
-describe InputSpec, ".new" do
+RSpec.describe InputSpec, ".new" do
   context "with no parameters" do
     it "should not raise error" do
-      lambda {
+      expect {
         InputSpec.new
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
     it "@spec_items.count should be zero" do
       input_spec = InputSpec.new
-      input_spec.instance_eval("@spec_items.count").should be_zero
+      expect(input_spec.instance_eval("@spec_items.count")).to be_zero
     end
   end
 
@@ -37,28 +37,28 @@ describe InputSpec, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "@spec_items.count should be 9" do
       input_spec = @new_proc.call
-      input_spec.instance_eval("@spec_items.count").should == 9
+      expect(input_spec.instance_eval("@spec_items.count")).to be == 9
     end
 
     it "@spec_items.each type.should be STRING" do
       input_spec = @new_proc.call
       input_spec.instance_eval("@spec_items").each do |input_spec_item|
         if input_spec_item.number == "5"
-          input_spec_item.type.should == InputSpecItem::TYPE_NUMERIC
+          expect(input_spec_item.type).to be == InputSpecItem::TYPE_NUMERIC
         else
-          input_spec_item.type.should == InputSpecItem::TYPE_STRING
+          expect(input_spec_item.type).to be == InputSpecItem::TYPE_STRING
         end
       end
     end
   end
 end
 
-describe InputSpec, "after generated" do
+RSpec.describe InputSpec, "after generated" do
   before(:each) do
     @input_spec = InputSpec.new([
                                  { :number => "1", :name => "item_1" },
@@ -83,20 +83,20 @@ describe InputSpec, "after generated" do
       end
 
       it "should not raise error" do
-        @proc.should_not raise_error
+        expect(@proc).not_to raise_error
       end
 
       it "@source should equal presented values" do
-        @proc.should change { @input_spec.instance_eval("@source") }.
+        expect(@proc).to change { @input_spec.instance_eval("@source") }.
           from(nil).to(@values)
       end
     end
 
     context "with invalid fixnum value" do
       it "should raise ArgumentError" do
-        lambda {
+        expect {
           @input_spec.source = nil
-        }.should raise_error ArgumentError
+        }.to raise_error ArgumentError
       end
     end
   end
@@ -111,7 +111,7 @@ describe InputSpec, "after generated" do
     end
 
     it "@source should change to nil" do
-      @proc.should change { @input_spec.instance_eval("@source") }.
+      expect(@proc).to change { @input_spec.instance_eval("@source") }.
         from(@values).to(nil)
     end
   end
@@ -131,7 +131,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should get value" do
-          @proc.call.should == @values[3]
+          expect(@proc.call).to be == @values[3]
         end
       end
 
@@ -143,7 +143,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
 
@@ -155,7 +155,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should get value" do
-          @proc.call.should == @values[6]
+          expect(@proc.call).to be == @values[6]
         end
       end
 
@@ -167,7 +167,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
 
@@ -179,7 +179,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should get value" do
-          @proc.call.should == @values[1]
+          expect(@proc.call).to be == @values[1]
         end
       end
 
@@ -191,7 +191,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
 
@@ -203,10 +203,10 @@ describe InputSpec, "after generated" do
         end
 
         it "should not raise error" do
-          @proc.should_not raise_error
+          expect(@proc).not_to raise_error
         end
 
-        it { @proc.call.should == "12" }
+        it { expect(@proc.call).to be == "12" }
       end
 
       context "when access invalid calculation expression with unknown number" do
@@ -217,7 +217,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
 
@@ -228,8 +228,8 @@ describe InputSpec, "after generated" do
           }
         end
 
-        it "should raise UnknownTargetExpressionError" do
-          @proc.should_not raise_error UnknownTargetExpressionError
+        it "should not raise error" do
+          expect(@proc).not_to raise_error
         end
       end
 
@@ -241,10 +241,10 @@ describe InputSpec, "after generated" do
         end
 
         it "should not raise error" do
-          @proc.should_not raise_error
+          expect(@proc).not_to raise_error
         end
 
-        it { @proc.call.should == "11.0" }
+        it { expect(@proc.call).to be == "11.0" }
       end
 
       context "when access invalid calculation expression for numeric and string add" do
@@ -255,16 +255,16 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
     end
 
     context "when not initialized source" do
       it "should raise error" do
-        lambda {
+        expect {
           @input_spec[0]
-        }.should raise_error SourceDataNotProvidedError
+        }.to raise_error SourceDataNotProvidedError
       end
     end
   end
@@ -284,7 +284,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should get value" do
-          @proc.call.should == @values[3]
+          expect(@proc.call).to be == @values[3]
         end
       end
 
@@ -296,16 +296,16 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
     end
 
     context "when not initialized source" do
       it "should raise error" do
-        lambda {
+        expect {
           @input_spec.value_at(0)
-        }.should raise_error SourceDataNotProvidedError
+        }.to raise_error SourceDataNotProvidedError
       end
     end
   end
@@ -325,7 +325,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should get value" do
-          @proc.call.should == @values[6]
+          expect(@proc.call).to be == @values[6]
         end
       end
 
@@ -337,16 +337,16 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
     end
 
     context "when not initialized source" do
       it "should raise error" do
-        lambda {
+        expect {
           @input_spec.value_at_by_number("0")
-        }.should raise_error SourceDataNotProvidedError
+        }.to raise_error SourceDataNotProvidedError
       end
     end
   end
@@ -366,7 +366,7 @@ describe InputSpec, "after generated" do
         end
 
         it "should get value" do
-          @proc.call.should == @values[1]
+          expect(@proc.call).to be == @values[1]
         end
       end
 
@@ -378,16 +378,16 @@ describe InputSpec, "after generated" do
         end
 
         it "should raise error UnknownTargetExpressionError" do
-          @proc.should raise_error UnknownTargetExpressionError
+          expect(@proc).to raise_error UnknownTargetExpressionError
         end
       end
     end
 
     context "when not initialized source" do
       it "should raise error" do
-        lambda {
+        expect {
           @input_spec.value_at_by_name("item_3")
-        }.should raise_error SourceDataNotProvidedError
+        }.to raise_error SourceDataNotProvidedError
       end
     end
   end
@@ -401,7 +401,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should get spec item" do
-        @proc.call.number.should == "4"
+        expect(@proc.call.number).to be == "4"
       end
     end
 
@@ -413,7 +413,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise error UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
 
@@ -425,7 +425,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should get spec item" do
-        @proc.call.number.should == "7"
+        expect(@proc.call.number).to be == "7"
       end
     end
 
@@ -437,7 +437,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise error UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
 
@@ -449,7 +449,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should get spec item" do
-        @proc.call.number.should == "2"
+        expect(@proc.call.number).to be == "2"
       end
     end
 
@@ -461,7 +461,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise error UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
 
@@ -473,11 +473,11 @@ describe InputSpec, "after generated" do
       end
 
       it "should not raise error" do
-        @proc.should_not raise_error
+        expect(@proc).not_to raise_error
       end
 
-      it { @proc.call.should == [@input_spec.spec_item_at_by_number("1"),
-                                 @input_spec.spec_item_at_by_number("2")] }
+      it { expect(@proc.call).to be == [@input_spec.spec_item_at_by_number("1"),
+                                        @input_spec.spec_item_at_by_number("2")] }
     end
 
     context "when access invalid calculation expression with unknown number" do
@@ -488,7 +488,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
 
@@ -499,8 +499,8 @@ describe InputSpec, "after generated" do
         }
       end
 
-      it { @proc.call.should == [@input_spec.spec_item_at_by_number("1"),
-                                 @input_spec.spec_item_at_by_number("2")] }
+      it { expect(@proc.call).to be == [@input_spec.spec_item_at_by_number("1"),
+                                        @input_spec.spec_item_at_by_number("2")] }
     end
   end
 
@@ -513,7 +513,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should get spec item" do
-        @proc.call.number.should == "4"
+        expect(@proc.call.number).to be == "4"
       end
     end
 
@@ -525,7 +525,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise error UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
   end
@@ -539,7 +539,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should get spec item" do
-        @proc.call.number.should == "7"
+        expect(@proc.call.number).to be == "7"
       end
     end
 
@@ -551,7 +551,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise error UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
   end
@@ -565,7 +565,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should get spec item" do
-        @proc.call.number.should == "2"
+        expect(@proc.call.number).to be == "2"
       end
     end
 
@@ -577,7 +577,7 @@ describe InputSpec, "after generated" do
       end
 
       it "should raise error UnknownTargetExpressionError" do
-        @proc.should raise_error UnknownTargetExpressionError
+        expect(@proc).to raise_error UnknownTargetExpressionError
       end
     end
   end

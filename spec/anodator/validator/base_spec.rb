@@ -3,28 +3,28 @@ require "spec_helper"
 # Anodator::Validator::Base
 require "anodator/validator/base"
 
-describe Anodator::Validator::Base, "#new" do
+RSpec.describe Anodator::Validator::Base, "#new" do
   context "with no parameters" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Anodator::Validator::Base.new
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with only target(nil) parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Anodator::Validator::Base.new(nil)
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with only target("") parameter" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Anodator::Validator::Base.new("")
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
@@ -35,13 +35,13 @@ describe Anodator::Validator::Base, "#new" do
       }
     end
 
-    it "should not raise ArgumentError" do
-      @new_proc.should_not raise_error ArgumentError
+    it "should not raise error" do
+      expect(@new_proc).not_to raise_error
     end
 
     it "#allow_blank? should be false" do
       @base = @new_proc.call
-      @base.should_not be_allow_blank
+      expect(@base).not_to be_allow_blank
     end
   end
 
@@ -53,13 +53,13 @@ describe Anodator::Validator::Base, "#new" do
         }
       end
 
-      it "should not raise ArgumentError" do
-        @new_proc.should_not raise_error ArgumentError
+      it "should not raise error" do
+        expect(@new_proc).not_to raise_error
       end
 
       it "#allow_blank? should be true" do
         @base = @new_proc.call
-        @base.should be_allow_blank
+        expect(@base).to be_allow_blank
       end
     end
 
@@ -70,13 +70,13 @@ describe Anodator::Validator::Base, "#new" do
         }
       end
 
-      it "should not raise ArgumentError" do
-        @new_proc.should_not raise_error ArgumentError
+      it "should not raise error" do
+        expect(@new_proc).not_to raise_error
       end
 
       it "#allow_blank? should be false" do
         @base = @new_proc.call
-        @base.should_not be_allow_blank
+        expect(@base).not_to be_allow_blank
       end
     end
 
@@ -87,13 +87,13 @@ describe Anodator::Validator::Base, "#new" do
         }
       end
 
-      it "should not raise ArgumentError" do
-        @new_proc.should_not raise_error ArgumentError
+      it "should not raise error" do
+        expect(@new_proc).not_to raise_error
       end
 
       it "#description should be 'description message here.'" do
         @base = @new_proc.call
-        @base.description.should == "description message here."
+        expect(@base.description).to be == "description message here."
       end
     end
 
@@ -105,21 +105,21 @@ describe Anodator::Validator::Base, "#new" do
       end
 
       it "should raise ArgumentError" do
-        @new_proc.should raise_error ArgumentError
+        expect(@new_proc).to raise_error ArgumentError
       end
     end
   end
 end
 
-describe Anodator::Validator::Base, "#validate" do
+RSpec.describe Anodator::Validator::Base, "#validate" do
   it "Anodator::Validator::Base#validate raise NotImplementedError" do
-    lambda {
+    expect {
       Anodator::Validator::Base.new("1").validate
-    }.should raise_error NoMethodError
+    }.to raise_error NoMethodError
   end
 end
 
-describe Anodator::Validator::Base, "create a new Validator class to inherit" do
+RSpec.describe Anodator::Validator::Base, "create a new Validator class to inherit" do
   before(:all) do
     module Anodator
       module Validator
@@ -132,22 +132,19 @@ describe Anodator::Validator::Base, "create a new Validator class to inherit" do
   end
 
   it "should have additional option" do
-    Anodator::Validator::SomeValidator.valid_option_keys.
-      should be_include(:some_option)
+    expect(Anodator::Validator::SomeValidator.valid_option_keys).to include(:some_option)
   end
 
   it "should have default option ':allow_blank'" do
-    Anodator::Validator::SomeValidator.valid_option_keys.
-      should be_include(:allow_blank)
+    expect(Anodator::Validator::SomeValidator.valid_option_keys).to include(:allow_blank)
   end
 
   it "should have default value is true for option 'some_option'" do
-    Anodator::Validator::SomeValidator.default_options[:some_option].
-      should be_true
+    expect(Anodator::Validator::SomeValidator.default_options[:some_option]).to be_truthy
   end
 end
 
-describe Anodator::Validator::Base, "create a new Validator class with unknown defualt options" do
+RSpec.describe Anodator::Validator::Base, "create a new Validator class with unknown defualt options" do
   before(:all) do
     @new_class_proc = lambda {
       module Anodator
@@ -162,53 +159,53 @@ describe Anodator::Validator::Base, "create a new Validator class with unknown d
   end
 
   it "should raise error" do
-    @new_class_proc.should raise_error ArgumentError
+    expect(@new_class_proc).to raise_error ArgumentError
   end
 end
 
-describe Anodator::Validator::Base, "set values for validation" do
+RSpec.describe Anodator::Validator::Base, "set values for validation" do
   context "for nil value" do
     it "should raise argument error" do
-      lambda {
+      expect {
         Anodator::Validator::Base.values = nil
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "for String value" do
-    it "should not raise argument error" do
-      lambda {
+    it "should not raise error" do
+      expect {
         Anodator::Validator::Base.values = "value"
-      }.should_not raise_error ArgumentError
+      }.not_to raise_error
     end
   end
 
   context "for Array values" do
-    it "should not raise argument error" do
-      lambda {
+    it "should not raise error" do
+      expect {
         Anodator::Validator::Base.values = [1, 2, 3]
-      }.should_not raise_error ArgumentError
+      }.not_to raise_error
     end
   end
 
   context "for Hash values" do
-    it "should not raise argument error" do
-      lambda {
+    it "should not raise error" do
+      expect {
         Anodator::Validator::Base.values = { "1" => 1, "2" => 2, "3" => 3 }
-      }.should_not raise_error ArgumentError
+      }.not_to raise_error
     end
   end
 
   context "for another values what can respond to [] method" do
-    it "should not raise argument error" do
-      lambda {
+    it "should not raise error" do
+      expect {
         class Dict
           def []
             return ""
           end
         end
         Anodator::Validator::Base.values = Dict.new
-      }.should_not raise_error ArgumentError
+      }.not_to raise_error
     end
   end
 end

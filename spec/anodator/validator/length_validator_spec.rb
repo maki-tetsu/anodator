@@ -5,20 +5,20 @@ require "anodator/validator/length_validator"
 
 include Anodator::Validator
 
-describe LengthValidator, ".new" do
+RSpec.describe LengthValidator, ".new" do
   context "with no paramerters" do
     it "should raise error" do
-      lambda {
+      expect {
         LengthValidator.new()
-      }.should raise_error
+      }.to raise_error
     end
   end
 
   context "with only target expression" do
     it "should not raise error" do
-      lambda {
+      expect {
         LengthValidator.new("1")
-      }.should_not raise_error
+      }.not_to raise_error
     end
   end
 
@@ -30,12 +30,12 @@ describe LengthValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "should have :maximum option value" do
       validator = @new_proc.call
-      validator.options[:maximum].value.should == 10
+      expect(validator.options[:maximum].value).to be == 10
     end
   end
 
@@ -47,12 +47,12 @@ describe LengthValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "should have :minimum option value" do
       validator = @new_proc.call
-      validator.options[:minimum].value.should == 10
+      expect(validator.options[:minimum].value).to be == 10
     end
   end
 
@@ -64,12 +64,12 @@ describe LengthValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "should have :is option value" do
       validator = @new_proc.call
-      validator.options[:is].value.should == 10
+      expect(validator.options[:is].value).to be == 10
     end
   end
 
@@ -81,20 +81,20 @@ describe LengthValidator, ".new" do
     end
 
     it "should not raise error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     it "should have :in option value" do
       validator = @new_proc.call
-      validator.options[:in].should == (3..6)
+      expect(validator.options[:in]).to be == (3..6)
     end
   end
 end
 
-describe LengthValidator, "#valid?" do
+RSpec.describe LengthValidator, "#valid?" do
   context "with only target expression" do
+    let(:validator) { LengthValidator.new("1") }
     before(:each) do
-      @validator = LengthValidator.new("1")
       Base.values = {
         "1" => "string",
         "2" => "string",
@@ -104,16 +104,12 @@ describe LengthValidator, "#valid?" do
     end
 
     it "should not raise error" do
-      lambda {
-        @validator.valid?
-      }.should_not raise_error
+      expect { validator.valid? }.not_to raise_error
     end
   end
 
   context "with target expression and :maximum parameters" do
-    before(:each) do
-      @validator = LengthValidator.new("1", :maximum => 10)
-    end
+    let(:validator) { LengthValidator.new("1", :maximum => 10) }
 
     context "values for valid" do
       before(:each) do
@@ -122,7 +118,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "values for invalid" do
@@ -132,14 +128,12 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 
   context "with target expression and :minimum parameters" do
-    before(:each) do
-      @validator = LengthValidator.new("1", :minimum => 10)
-    end
+    let(:validator) { LengthValidator.new("1", :minimum => 10) }
 
     context "values for valid" do
       before(:each) do
@@ -148,7 +142,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "values for invalid" do
@@ -158,14 +152,12 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 
   context "with target expression and :is parameters" do
-    before(:each) do
-      @validator = LengthValidator.new("1", :is => 10)
-    end
+    let(:validator) { LengthValidator.new("1", :is => 10) }
 
     context "values for valid" do
       before(:each) do
@@ -174,7 +166,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "values for invalid" do
@@ -184,14 +176,12 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 
   context "with target expression and :in parameters" do
-    before(:each) do
-      @validator = LengthValidator.new("1", :in => 3..6)
-    end
+    let(:validator) { LengthValidator.new("1", :in => 3..6) }
 
     context "values for minimum equal valid" do
       before(:each) do
@@ -200,7 +190,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "values for minimum invalid" do
@@ -210,7 +200,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
 
     context "values for maximum equal valid" do
@@ -220,7 +210,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should be_valid }
+      it { expect(validator).to be_valid }
     end
 
     context "values for maximum invalid" do
@@ -230,7 +220,7 @@ describe LengthValidator, "#valid?" do
         }
       end
 
-      it { @validator.should_not be_valid }
+      it { expect(validator).not_to be_valid }
     end
   end
 end

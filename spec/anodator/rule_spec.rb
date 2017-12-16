@@ -5,29 +5,29 @@ require "anodator/rule"
 
 include Anodator
 
-describe Rule, "#new" do
+RSpec.describe Rule, "#new" do
   context "with no parameters" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Rule.new
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with only target_expressions" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Rule.new(["1", "2", "3"])
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
   context "with target_expressions and message" do
     it "should raise ArgumentError" do
-      lambda {
+      expect {
         Rule.new(["1", "2", "3"],
                  Message.new("'[[1::name]]' cannot be blank"))
-      }.should raise_error ArgumentError
+      }.to raise_error ArgumentError
     end
   end
 
@@ -43,7 +43,7 @@ describe Rule, "#new" do
     end
 
     it "should not raise Error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -52,23 +52,23 @@ describe Rule, "#new" do
       end
 
       it "#target_expressions should equal by initialize" do
-        @rule.target_expressions.should == ["1", "2"]
+        expect(@rule.target_expressions).to be == ["1", "2"]
       end
 
       it "#message should equal by initialize" do
-        @rule.message.should == @message
+        expect(@rule.message).to be == @message
       end
 
       it "#validator should equal by initialize" do
-        @rule.validator.should == @validator
+        expect(@rule.validator).to be == @validator
       end
 
       it "#prerequisite should be nil" do
-        @rule.prerequisite.should be_nil
+        expect(@rule.prerequisite).to be_nil
       end
 
       it "#level should equal by default(ERROR_LEVELS[:error])" do
-        @rule.level.should == Rule::ERROR_LEVELS[:error]
+        expect(@rule.level).to be == Rule::ERROR_LEVELS[:error]
       end
     end
   end
@@ -86,7 +86,7 @@ describe Rule, "#new" do
     end
 
     it "should not raise Error" do
-      @new_proc.should_not raise_error
+      expect(@new_proc).not_to raise_error
     end
 
     context "after generated" do
@@ -95,30 +95,30 @@ describe Rule, "#new" do
       end
 
       it "#target_expressions should equal by initialize" do
-        @rule.target_expressions.should == ["1", "2"]
+        expect(@rule.target_expressions).to be == ["1", "2"]
       end
 
       it "#message should equal by initialize" do
-        @rule.message.should == @message
+        expect(@rule.message).to be == @message
       end
 
       it "#validator should equal by initialize" do
-        @rule.validator.should == @validator
+        expect(@rule.validator).to be == @validator
       end
 
       it "#prerequisite should equal by initialize" do
-        @rule.prerequisite.should == @prerequisite
+        expect(@rule.prerequisite).to be == @prerequisite
       end
 
       it "#level should equal by initialize" do
-        @rule.level.should == Rule::ERROR_LEVELS[:warning]
+        expect(@rule.level).to be == Rule::ERROR_LEVELS[:warning]
       end
     end
   end
 
-  context "with multiple prerequisite" do 
-    before(:each) do 
-      @new_proc = lambda { 
+  context "with multiple prerequisite" do
+    before(:each) do
+      @new_proc = lambda {
         v1 = Validator::PresenceValidator.new("1")
         v2 = Validator::PresenceValidator.new("2")
         @message = Message.new("'[[1::name]]' and '[[2::name]]' cannot be blank")
@@ -127,18 +127,18 @@ describe Rule, "#new" do
                           Validator::BlankValidator.new("3"),
                           Validator::BlankValidator.new("4")
                          ]
-        
+
         Rule.new(["1", "2"], @message, @validator, @prerequisites, Rule::ERROR_LEVELS[:warning])
       }
     end
 
-    it "should not raise Error" do 
-      @new_proc.should_not raise_error
+    it "should not raise Error" do
+      expect(@new_proc).not_to raise_error
     end
   end
 end
 
-describe Rule, "#check" do
+RSpec.describe Rule, "#check" do
   before(:each) do
     @input_spec = InputSpec.new([
                                  { :number => "1", :name => "item_1" },
@@ -159,7 +159,7 @@ describe Rule, "#check" do
       Validator::Base.values = @input_spec
     end
 
-    it { @rule.check.should be_nil }
+    it { expect(@rule.check).to be_nil }
   end
 
   context "when check rule is not valid" do
@@ -168,13 +168,13 @@ describe Rule, "#check" do
       Validator::Base.values = @input_spec
     end
 
-    it { @rule.check.should_not be_nil }
-    it { @rule.check.should be_a CheckResult }
-
+    it { expect(@rule.check).not_to be_nil }
+    it { expect(@rule.check).to be_a CheckResult }
+    
     it "CheckResult#target_numbers must be only number expression" do
       result = @rule.check
       result.target_numbers.each do |number|
-        @input_spec.spec_item_by_expression(number).number.should == number
+        expect(@input_spec.spec_item_by_expression(number).number).to be == number
       end
     end
   end
@@ -185,7 +185,7 @@ describe Rule, "#check" do
       Validator::Base.values = @input_spec
     end
 
-    it { @rule.check.should be_nil }
+    it { expect(@rule.check).to be_nil }
   end
 
   context "with complex prerequisite" do
@@ -213,7 +213,7 @@ describe Rule, "#check" do
         Validator::Base.values = @input_spec
       end
 
-      it { @rule.check.should be_a CheckResult }
+      it { expect(@rule.check).to be_a CheckResult }
     end
 
     context "when prerequisites matches and valid" do
@@ -222,7 +222,7 @@ describe Rule, "#check" do
         Validator::Base.values = @input_spec
       end
 
-      it { @rule.check.should be_nil }
+      it { expect(@rule.check).to be_nil }
     end
 
     context "when prerequisites not matches and valid" do
@@ -231,7 +231,7 @@ describe Rule, "#check" do
         Validator::Base.values = @input_spec
       end
 
-      it { @rule.check.should be_nil }
+      it { expect(@rule.check).to be_nil }
     end
 
     context "when prerequisites not matches and invalid" do
@@ -240,12 +240,12 @@ describe Rule, "#check" do
         Validator::Base.values = @input_spec
       end
 
-      it { @rule.check.should be_nil }
+      it { expect(@rule.check).to be_nil }
     end
   end
 end
 
-describe Rule, ".add_error_level" do
+RSpec.describe Rule, ".add_error_level" do
   context "when new valid error level" do
     before(:each) do
       @proc = lambda {
@@ -258,21 +258,21 @@ describe Rule, ".add_error_level" do
     end
 
     it "should not raise error" do
-      lambda {
+      expect {
         @proc.call
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
     it "should 3 error levels" do
-      lambda {
+      expect {
         @proc.call
-      }.should change(Rule::ERROR_LEVELS, :size).from(2).to(3)
+      }.to change(Rule::ERROR_LEVELS, :size).from(2).to(3)
     end
 
     it "should 3 error level names" do
-      lambda {
+      expect {
         @proc.call
-      }.should change(Rule::ERROR_LEVEL_NAMES, :size).from(2).to(3)
+      }.to change(Rule::ERROR_LEVEL_NAMES, :size).from(2).to(3)
     end
   end
 end
