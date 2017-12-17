@@ -1,8 +1,10 @@
 # Anodator
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/anodator`. To experiment with that code, run `bin/console` for an interactive prompt.
+[![Build Status](https://travis-ci.org/maki-tetsu/anodator.svg?branch=master)](https://travis-ci.org/maki-tetsu/anodator)
+[![Maintainability](https://api.codeclimate.com/v1/badges/43ced0dceff5d835ccce/maintainability)](https://codeclimate.com/github/maki-tetsu/anodator/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/43ced0dceff5d835ccce/test_coverage)](https://codeclimate.com/github/maki-tetsu/anodator/test_coverage)
 
-TODO: Delete this and the text above, and describe your gem
+Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/anodator`. To experiment with that code, run `bin/console` for an interactive prompt.
 
 ## Installation
 
