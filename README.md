@@ -1,5 +1,8 @@
 # Anodator
 
+[![Gem Version](https://badge.fury.io/rb/anodator.svg)](https://badge.fury.io/rb/anodator)
+
+[![Dependency Status](https://beta.gemnasium.com/badges/github.com/maki-tetsu/anodator.svg)](https://beta.gemnasium.com/projects/github.com/maki-tetsu/anodator)
 [![Build Status](https://travis-ci.org/maki-tetsu/anodator.svg?branch=master)](https://travis-ci.org/maki-tetsu/anodator)
 [![Maintainability](https://api.codeclimate.com/v1/badges/43ced0dceff5d835ccce/maintainability)](https://codeclimate.com/github/maki-tetsu/anodator/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/43ced0dceff5d835ccce/test_coverage)](https://codeclimate.com/github/maki-tetsu/anodator/test_coverage)
