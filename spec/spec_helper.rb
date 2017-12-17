@@ -1,4 +1,10 @@
 require "bundler/setup"
+require "simplecov"
+
+SimpleCov.start do
+  add_filter %r{^/spec/}
+end
+
 require "anodator"
 
 RSpec.configure do |config|
