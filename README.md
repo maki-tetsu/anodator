@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install anodator
+    $ gem install anodator -v=1.0.0.pre1
 
 ## Usage
 
