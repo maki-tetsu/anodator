@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+docker run -it -v `pwd`:/works/anodator --rm ruby:2.4.2 /works/anodator/bin/console-on-docker

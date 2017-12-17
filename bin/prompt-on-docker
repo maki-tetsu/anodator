@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+cd /works/anodator &&
+./bin/setup &&
+/bin/bash
