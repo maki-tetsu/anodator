@@ -1,7 +1,7 @@
-require "anodator/anodator_error"
+require 'anodator/anodator_error'
 
 module Anodator
-  class UnknownMessageAttributeError < AnodatorError ; end
+  class UnknownMessageAttributeError < AnodatorError; end
 
   # Message is error message builder.
   #
@@ -15,7 +15,7 @@ module Anodator
       @template = template_message.to_s
 
       if @template.split(//).size.zero?
-        raise ArgumentError.new("template_message cannot be blank")
+        raise ArgumentError, 'template_message cannot be blank'
       end
     end
 
@@ -31,29 +31,29 @@ module Anodator
     #   - value:  target actual data
     def expand(data_provider)
       @template.gsub(/\[\[([^:]+)::([^\]]+)\]\]/) do
-        spec_item = data_provider.spec_item_by_expression($1)
-        case $2
-        when "name"
+        spec_item = data_provider.spec_item_by_expression(Regexp.last_match(1))
+        case Regexp.last_match(2)
+        when 'name'
           spec_item.name
-        when "number"
+        when 'number'
           spec_item.number
-        when "value"
-          data_provider[$1]
+        when 'value'
+          data_provider[Regexp.last_match(1)]
         else
-          raise UnknownMessageAttributeError.new("Unknown message attribute '#{$2}'")
+          raise UnknownMessageAttributeError, "Unknown message attribute '#{Regexp.last_match(2)}'"
         end
       end
     end
 
     def validate_configuration
       @template.gsub(/\[\[([^:]+)::([^\]]+)\]\]/) do
-        Validator::Base.values.spec_item_by_expression($1)
-        unless %W(name number value).include?($2)
-          raise UnknownMessageAttributeError.new("Unknown message attribute '#{$2}'")
+        Validator::Base.values.spec_item_by_expression(Regexp.last_match(1))
+        unless %w[name number value].include?(Regexp.last_match(2))
+          raise UnknownMessageAttributeError, "Unknown message attribute '#{Regexp.last_match(2)}'"
         end
       end
     rescue UnknownTargetExpressionError, UnknownMessageAttributeError => e
-      raise InvalidConfiguration.new(e.to_s)
+      raise InvalidConfiguration, e.to_s
     end
   end
 end

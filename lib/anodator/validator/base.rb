@@ -1,4 +1,4 @@
-require "anodator/validator/value_proxy"
+require 'anodator/validator/value_proxy'
 
 module Anodator
   module Validator
@@ -11,12 +11,12 @@ module Anodator
       #
       # :allow_blank options are all available options in Validator.
       # In addition, Validator All you need to consider the case of the blank.
-      @valid_option_keys = [:allow_blank, :description]
+      @valid_option_keys = %i[allow_blank description]
 
       # default options
       #
       # Is used as the initial value was not set when you create a new Validator.
-      @default_options   = { :allow_blank => false }
+      @default_options   = { allow_blank: false }
 
       # target specify value
       attr_reader :target
@@ -32,43 +32,41 @@ module Anodator
         def valid_option_keys(*option_keys)
           # initialize from superclass
           if @valid_option_keys.nil?
-            @valid_option_keys = self.superclass.valid_option_keys
+            @valid_option_keys = superclass.valid_option_keys
           end
 
           unless option_keys.size.zero?
             option_keys.each do |key|
               if @valid_option_keys.include?(key)
-                raise ArgumentError.new("Validator already has option for '#{key}'")
+                raise ArgumentError, "Validator already has option for '#{key}'"
               else
                 @valid_option_keys << key
               end
             end
           end
 
-          return @valid_option_keys.dup
+          @valid_option_keys.dup
         end
 
         # set and/or get default options
         def default_options(options = nil)
           # initialize from superclass
-          if @default_options.nil?
-            @default_options = self.superclass.default_options
-          end
+          @default_options = superclass.default_options if @default_options.nil?
 
           unless options.nil?
             unless options.is_a? Hash
-              raise ArgumentError.new("default_options must call with Hash")
+              raise ArgumentError, 'default_options must call with Hash'
             end
             options.each do |option, default_value|
               if @valid_option_keys.include?(option)
                 @default_options[option] = default_value
               else
-                raise ArgumentError.new("Unknown option '#{option}'")
+                raise ArgumentError, "Unknown option '#{option}'"
               end
             end
           end
 
-          return @default_options.dup
+          @default_options.dup
         end
 
         # Set the data to be checked.
@@ -78,13 +76,13 @@ module Anodator
           if values.respond_to?(:[])
             @@values = values
           else
-            raise ArgumentError.new("values must be respond to [] method for validations.")
+            raise ArgumentError, 'values must be respond to [] method for validations.'
           end
         end
 
         # Get the data to be checked
         def values
-          return @@values
+          @@values
         end
       end
 
@@ -97,13 +95,13 @@ module Anodator
       # +valid_option_keys+.
       # If necessary add additional parameters for the new validator is defined
       # in the inherited class to add.
-      def initialize(target_expression, options = { })
+      def initialize(target_expression, options = {})
         if target_expression.to_s.length.zero?
-          raise ArgumentError.new("target cannot be nil or blank")
+          raise ArgumentError, 'target cannot be nil or blank'
         else
           @target = target_expression.to_s
         end
-        @options = { }
+        @options = {}
         merge_options!(self.class.default_options)
         merge_options!(options)
       end
@@ -115,7 +113,7 @@ module Anodator
       # Can be implemented to return a boolean value to the final,
       # +valid?+ The method used is called.
       def validate
-        raise NoMethodError.new("must define method 'validate'")
+        raise NoMethodError, "must define method 'validate'"
       end
 
       # Call the +validate+ method to return a boolean value accordingly
@@ -123,7 +121,7 @@ module Anodator
       # If any exception occurs in the +validate+ method displays the contents
       # to standard error. Then raise same error.
       def valid?
-        return validate
+        validate
       end
 
       # merge options
@@ -134,7 +132,7 @@ module Anodator
           if self.class.valid_option_keys.include?(key)
             @options[key] = value
           else
-            raise ArgumentError.new("Unknown option key '#{key}'.")
+            raise ArgumentError, "Unknown option key '#{key}'."
           end
         end
       end
@@ -145,19 +143,19 @@ module Anodator
       #
       # always return String object use to_s method
       def target_value
-        return @@values[target].to_s
+        @@values[target].to_s
       end
 
       def argument_value_at(name_or_index)
-        return @@values[name_or_index].to_s
+        @@values[name_or_index].to_s
       end
 
       def allow_blank?
-        return @options[:allow_blank]
+        @options[:allow_blank]
       end
 
       def description
-        return @options[:description]
+        @options[:description]
       end
 
       def proxy_value(target)
@@ -165,14 +163,14 @@ module Anodator
       end
       private :proxy_value
 
-      def to_s(level = 4, step = 2)
-        (" " * level) + "- #{self.class}(#{self.description})"
+      def to_s(level = 4, _step = 2)
+        (' ' * level) + "- #{self.class}(#{description})"
       end
 
       def validate_configuration
         @@values.spec_item_by_expression(@target)
       rescue UnknownTargetExpressionError => e
-        raise InvalidConfiguration.new(e.to_s)
+        raise InvalidConfiguration, e.to_s
       end
     end
   end

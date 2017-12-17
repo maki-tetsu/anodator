@@ -1,4 +1,4 @@
-require "anodator/rule"
+require 'anodator/rule'
 
 module Anodator
   class CheckResult
@@ -10,25 +10,25 @@ module Anodator
       @level          = level
 
       if @target_numbers.size.zero?
-        raise ArgumentError.new("target numbers cannot be blank")
+        raise ArgumentError, 'target numbers cannot be blank'
       end
       if @message.split(//).size.zero?
-        raise ArgumentError.new("message cannot be blank")
+        raise ArgumentError, 'message cannot be blank'
       end
       unless Rule::ERROR_LEVELS.values.include?(level)
-        raise ArgumentError.new("level must be #{Rule::ERROR_LEVEL_NAMES.join(", ")}")
+        raise ArgumentError, "level must be #{Rule::ERROR_LEVEL_NAMES.join(', ')}"
       end
     end
 
     def to_s
       buf = "[#{Rule.level_expression(@level)}]\t"
-      buf += @message + " |#{@target_numbers.join(", ")}|"
+      buf += @message + " |#{@target_numbers.join(', ')}|"
     end
 
     def method_missing(message, *args)
       if message.to_s =~ /(\A[a-zA-Z_]+)\?\Z/
-        if Rule::ERROR_LEVELS.keys.include?($1.to_sym)
-          return Rule::ERROR_LEVELS[$1.to_sym] == @level
+        if Rule::ERROR_LEVELS.keys.include?(Regexp.last_match(1).to_sym)
+          return Rule::ERROR_LEVELS[Regexp.last_match(1).to_sym] == @level
         end
       end
 

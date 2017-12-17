@@ -1,4 +1,4 @@
-require "csv"
+require 'csv'
 
 module Anodator
   module Utils
@@ -24,10 +24,10 @@ module Anodator
           first = false
           next
         end
-        spec << { :number => row[0], :name => row[1], :type => row[2] }
+        spec << { number: row[0], name: row[1], type: row[2] }
       end
 
-      return InputSpec.new(spec)
+      InputSpec.new(spec)
     end
 
     # load output_spec from csv file
@@ -56,8 +56,8 @@ module Anodator
     # Return:
     #   OutputSpec instance
     def self.load_output_spec_from_csv_file(file_path,
-                                       target = Anodator::OutputSpec::TARGET_ERROR,
-                                       include_no_error = false)
+                                            target = Anodator::OutputSpec::TARGET_ERROR,
+                                            include_no_error = false)
       first = true
       header = nil
       spec = []
@@ -68,14 +68,14 @@ module Anodator
           first = false
           next
         end
-        if row.first.nil? || row.first.split(//).length.zero?
-          spec << row.last.to_sym
-        else
-          spec << row.first.to_s
-        end
+        spec << if row.first.nil? || row.first.split(//).length.zero?
+                  row.last.to_sym
+                else
+                  row.first.to_s
+                end
       end
 
-      return Anodator::OutputSpec.new(spec, :target => target, :include_no_error => include_no_error)
+      Anodator::OutputSpec.new(spec, target: target, include_no_error: include_no_error)
     end
 
     # options reader for option values for validator specs
@@ -89,13 +89,13 @@ module Anodator
     #   - options_index_from: index for option column be started on row(default: 4)
     # Return:
     #   Hash
-    def self.options_reader(row, options = { }, options_index_from = 4)
+    def self.options_reader(row, options = {}, options_index_from = 4)
       if row.size > options_index_from
         row[options_index_from..-1].each do |column|
           next if column.nil?
-          key, value = column.split(":", 2)
+          key, value = column.split(':', 2)
           case value
-          when "true", "false"
+          when 'true', 'false'
             options[key.to_sym] = eval(value)
           else
             options[key.to_sym] = value
@@ -103,7 +103,7 @@ module Anodator
         end
       end
 
-      return options
+      options
     end
 
     # load validators from csv file
@@ -120,7 +120,7 @@ module Anodator
     def self.load_validators_from_csv_file(file_path)
       first = true
       header = nil
-      validators = { }
+      validators = {}
 
       CSV.read(file_path).each do |row|
         # skip header
@@ -131,46 +131,42 @@ module Anodator
         end
 
         if validators.keys.include?(row[0])
-          raise ArgumentError.new("Duplicated validator number '#{row[0]}'!")
+          raise ArgumentError, "Duplicated validator number '#{row[0]}'!"
         end
 
-        options = options_reader(row, { :description => row[1] })
+        options = options_reader(row, description: row[1])
 
         validator = nil
 
         case row[2]
-        when "presence"
+        when 'presence'
           validator = Validator::PresenceValidator
-        when "blank"
+        when 'blank'
           validator = Validator::BlankValidator
-        when "date"
+        when 'date'
           validator = Validator::DateValidator
-        when "format"
+        when 'format'
           validator = Validator::FormatValidator
-        when "inclusion"
+        when 'inclusion'
           validator = Validator::InclusionValidator
-          unless options[:in].nil?
-            options[:in] = options[:in].split(",")
-          end
-        when "length"
+          options[:in] = options[:in].split(',') unless options[:in].nil?
+        when 'length'
           validator = Validator::LengthValidator
-        when "numeric"
+        when 'numeric'
           validator = Validator::NumericValidator
-        when "complex"
-          options[:validators] = row[3].split(",").map do |validator_number|
+        when 'complex'
+          options[:validators] = row[3].split(',').map do |validator_number|
             validators[validator_number]
           end
           validators[row[0]] = Validator::ComplexValidator.new(options)
         else
-          raise ArgumentError.new("Unknown validator type '#{row[2]}'!")
+          raise ArgumentError, "Unknown validator type '#{row[2]}'!"
         end
 
-        if validator
-          validators[row[0]] = validator.new(row[3], options)
-        end
+        validators[row[0]] = validator.new(row[3], options) if validator
       end
 
-      return validators
+      validators
     end
 
     # load rule_set from csv file
@@ -200,19 +196,17 @@ module Anodator
         end
 
         description = row[1]
-        target_expression = row[2].split(",")
+        target_expression = row[2].split(',')
         validator = validators[row[3]]
-        if !row[4].nil? && row[4].include?(",")
-          prerequisite = row[4].split(",").map do |validator_id|
+        if !row[4].nil? && row[4].include?(',')
+          prerequisite = row[4].split(',').map do |validator_id|
             raise "Unknown validator identifier '#{validator_id}'" if validators[validator_id].nil?
             next validators[validator_id]
           end
         else
           prerequisite = validators[row[4]]
         end
-        if validator.nil?
-          raise "Unknown validator identifier '#{row[3]}'"
-        end
+        raise "Unknown validator identifier '#{row[3]}'" if validator.nil?
         if !row[4].nil? && prerequisite.nil?
           raise "Unknown validator identifier '#{row[4]}'"
         end
@@ -232,7 +226,7 @@ module Anodator
                    description)
       end
 
-      return rule_set
+      rule_set
     end
   end
 end

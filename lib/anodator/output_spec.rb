@@ -1,28 +1,28 @@
 module Anodator
   class OutputSpec
-    TARGET_DATA  = "DATA"
-    TARGET_ERROR = "ERROR"
+    TARGET_DATA  = 'DATA'.freeze
+    TARGET_ERROR = 'ERROR'.freeze
 
-    VALID_SYMBOL_ITEMS = [
-                          :target_numbers,
-                          :target_names,
-                          :target_values,
-                          :error_message,
-                          :error_level,
-                          :error_count,
-                          :warning_count,
-                          :error_and_warning_count,
-                         ]
+    VALID_SYMBOL_ITEMS = %i[
+      target_numbers
+      target_names
+      target_values
+      error_message
+      error_level
+      error_count
+      warning_count
+      error_and_warning_count
+    ].freeze
 
     attr_reader   :items, :target, :include_no_error
     attr_accessor :separator, :value_separator
 
-    def initialize(items = [], options = { })
+    def initialize(items = [], options = {})
       @items            = items.to_a
       @target           = TARGET_ERROR
       @include_no_error = false
-      @separator        = " "
-      @value_separator  = ""
+      @separator        = ' '
+      @value_separator  = ''
 
       options.each do |key, opt|
         case key
@@ -33,12 +33,12 @@ module Anodator
         when :separator, :value_separator
           @separator = opt.to_s
         else
-          raise ArgumentError.new("unknown option #{key}.")
+          raise ArgumentError, "unknown option #{key}."
         end
       end
 
       unless [TARGET_DATA, TARGET_ERROR].include?(@target)
-        raise ArgumentError.new("unknown target option value #{@target}.")
+        raise ArgumentError, "unknown target option value #{@target}."
       end
 
       check_items
@@ -46,20 +46,17 @@ module Anodator
 
     def validate_configuration
       @items.each do |item|
-        if item.is_a? String
-          Validator::Base.values.spec_item_at_by_number(item)
-        end
+        Validator::Base.values.spec_item_at_by_number(item) if item.is_a? String
       end
     rescue UnknownTargetExpressionError => e
-      raise InvalidConfiguration.new(e.to_s)
+      raise InvalidConfiguration, e.to_s
     end
 
     def check_items
       @items.each do |item|
-        if item.is_a? Symbol
-          unless VALID_SYMBOL_ITEMS.include?(item)
-            raise ArgumentError.new("unknown item symbol #{item}")
-          end
+        next unless item.is_a? Symbol
+        unless VALID_SYMBOL_ITEMS.include?(item)
+          raise ArgumentError, "unknown item symbol #{item}"
         end
       end
     end
@@ -79,24 +76,24 @@ module Anodator
         if item.is_a? Symbol
           case item
           when :error_count
-            next check_results.map { |result|
+            next check_results.map do |result|
               result.error? ? true : nil
-            }.compact.size.to_s
+            end.compact.size.to_s
           when :warning_count
-            next check_results.map { |result|
+            next check_results.map do |result|
               result.warning? ? true : nil
-            }.compact.size.to_s
+            end.compact.size.to_s
           when :error_and_warning_count
             next check_results.size.to_s
           else
-            next ""
+            next ''
           end
         else # data
           next input_spec_with_values[item]
         end
       end
 
-      return buf
+      buf
     end
     private :generate_data
 
@@ -109,9 +106,9 @@ module Anodator
             if item.is_a? Symbol
               case item
               when :error_count, :warning_count, :error_and_warning_count
-                next "0"
+                next '0'
               else
-                next ""
+                next ''
               end
             else # data
               next input_spec_with_values[item]
@@ -126,29 +123,29 @@ module Anodator
               when :target_numbers
                 next check_result.target_numbers.join(@separator)
               when :target_names
-                next check_result.target_numbers.map { |number|
+                next check_result.target_numbers.map do |number|
                   input_spec_with_values.spec_item_at_by_number(number).name
-                }.join(@separator)
+                end.join(@separator)
               when :target_values
-                next check_result.target_numbers.map { |number|
+                next check_result.target_numbers.map do |number|
                   input_spec_with_values[number]
-                }.join(@value_separator)
+                end.join(@value_separator)
               when :error_message
                 next check_result.message
               when :error_level
                 next check_result.level.to_s
               when :error_count
-                next check_results.map { |result|
+                next check_results.map do |result|
                   result.error? ? true : nil
-                }.compact.size.to_s
+                end.compact.size.to_s
               when :warning_count
-                next check_results.map { |result|
+                next check_results.map do |result|
                   result.warning? ? true : nil
-                }.compact.size.to_s
+                end.compact.size.to_s
               when :error_and_warning_count
                 next check_results.size.to_s
               else
-                next ""
+                next ''
               end
             else # data
               next input_spec_with_values[item]
@@ -157,7 +154,7 @@ module Anodator
         end
       end
 
-      return buf
+      buf
     end
     private :generate_error
   end

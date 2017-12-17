@@ -1,7 +1,7 @@
-require "anodator/input_spec"
-require "anodator/rule_set"
-require "anodator/output_spec"
-require "anodator/anodator_error"
+require 'anodator/input_spec'
+require 'anodator/rule_set'
+require 'anodator/output_spec'
+require 'anodator/anodator_error'
 
 module Anodator
   class Checker
@@ -11,13 +11,13 @@ module Anodator
       @output_specs = [default_output_spec]
 
       unless @input_spec.is_a? InputSpec
-        raise ArgumentError.new("input_spec must be InputSpec object")
+        raise ArgumentError, 'input_spec must be InputSpec object'
       end
       unless @rule_set.is_a? RuleSet
-        raise ArgumentError.new("rule_set must be RuleSet object")
+        raise ArgumentError, 'rule_set must be RuleSet object'
       end
       unless @output_specs.first.is_a? OutputSpec
-        raise ArgumentError.new("default_output_spec must be OutputSpec object")
+        raise ArgumentError, 'default_output_spec must be OutputSpec object'
       end
 
       Validator::Base.values = @input_spec
@@ -29,14 +29,12 @@ module Anodator
       # RuleSet
       @rule_set.validate_configuration
       # OutputSpec
-      @output_specs.each do |spec|
-        spec.validate_configuration
-      end
+      @output_specs.each(&:validate_configuration)
     end
 
     def add_output_spec(output_spec, configuration_check = false)
       unless output_spec.is_a? OutputSpec
-        raise ArgumentError.new("output_spec must be OutputSpec object")
+        raise ArgumentError, 'output_spec must be OutputSpec object'
       end
       @output_specs << output_spec
 
