@@ -10,7 +10,7 @@ RSpec.describe LengthValidator, ".new" do
     it "should raise error" do
       expect {
         LengthValidator.new()
-      }.to raise_error
+      }.to raise_error ArgumentError
     end
   end
 
