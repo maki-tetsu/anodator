@@ -67,19 +67,13 @@ RSpec.describe CheckResult, "#error?" do
   context "when level is error" do
     let(:check_result) { CheckResult.new("1", "message", Rule::ERROR_LEVELS[:error]) }
 
-    it {
-      pending
-      expect(check_result).to be_error
-    }
+    it { expect(check_result.error?).to be_truthy }
   end
 
   context "when level is warning" do
     let(:check_result) { CheckResult.new("1", "message", Rule::ERROR_LEVELS[:warning]) }
 
-    it {
-      pending
-      expect(check_result).not_to be_error
-    }
+    it { expect(check_result.error?).to be_falsey }
   end
 end
 
@@ -87,18 +81,12 @@ RSpec.describe CheckResult, "#warning?" do
   context "when level is error" do
     let(:check_result) { CheckResult.new("1", "message", Rule::ERROR_LEVELS[:error]) }
 
-    it {
-      pending
-      expect(check_result).not_to be_warning
-    }
+    it { expect(check_result.warning?).to be_falsey }
   end
 
   context "when level is warning" do
     let(:check_result) { CheckResult.new("1", "message", Rule::ERROR_LEVELS[:warning]) }
 
-    it {
-      pending
-      expect(check_result).to be_warning
-    }
+    it { expect(check_result.warning?).to be_truthy }
   end
 end
