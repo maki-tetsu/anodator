@@ -25,15 +25,19 @@ module Anodator
     def setup_input_spec_items(spec_items)
       spec_items.each do |spec|
         next unless %i[number name].all? { |k| spec.key?(k) }
-        item = if spec[:type].nil?
-                 InputSpecItem.new(spec[:number], spec[:name])
-               else
-                 InputSpecItem.new(spec[:number], spec[:name], spec[:type])
-               end
-        push_spec_items(item)
+        push_spec_items(build_input_spec_item(spec))
       end
     end
     private :setup_input_spec_items
+
+    def build_input_spec_item(spec)
+      if spec[:type].nil?
+        InputSpecItem.new(spec[:number], spec[:name])
+      else
+        InputSpecItem.new(spec[:number], spec[:name], spec[:type])
+      end
+    end
+    private :build_input_spec_item
 
     def push_spec_items(spec)
       check_duplicate_key(spec.number, spec.name)
