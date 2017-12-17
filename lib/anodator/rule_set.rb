@@ -1,4 +1,4 @@
-require "anodator/rule"
+require 'anodator/rule'
 
 module Anodator
   class RuleSet
@@ -11,11 +11,11 @@ module Anodator
       if rule.is_a? Rule
         @rules << rule
       else
-        raise ArgumentError.new("rule must be Anodator::Rule object")
+        raise ArgumentError, 'rule must be Anodator::Rule object'
       end
     end
 
-    alias_method :<<, :add_rule
+    alias << add_rule
 
     def check_all
       @results = []
@@ -33,20 +33,14 @@ module Anodator
       end
     end
 
-    def results
-      return @results
-    end
+    attr_reader :results
 
     def validate_configuration
-      @rules.each do |rule|
-        rule.validate_configuration
-      end
+      @rules.each(&:validate_configuration)
     end
 
     def to_s
-      @rules.map { |rule|
-        rule.to_s
-      }.join("\n")
+      @rules.map(&:to_s).join("\n")
     end
   end
 end

@@ -1,19 +1,19 @@
-require "anodator/validator/base"
-require "bigdecimal"
+require 'anodator/validator/base'
+require 'bigdecimal'
 
 module Anodator
   module Validator
     class NumericValidator < Base
       valid_option_keys :only_integer, :greater_than, :greater_than_or_equal_to
       valid_option_keys :less_than, :less_than_or_equal_to, :equal_to, :not_equal_to
-      default_options :only_integer => false
+      default_options only_integer: false
 
-      def initialize(target_expression, options = { })
+      def initialize(target_expression, options = {})
         super(target_expression, options)
 
-        [:greater_than, :greater_than_or_equal_to,
-          :less_than, :less_than_or_equal_to,
-          :equal_to, :not_equal_to].each do |key|
+        %i[greater_than greater_than_or_equal_to
+           less_than less_than_or_equal_to
+           equal_to not_equal_to].each do |key|
           @options[key] = proxy_value(@options[key]) unless @options[key].nil?
         end
       end
@@ -24,11 +24,11 @@ module Anodator
         end
 
         # check format
-        if @options[:only_integer]
-          regexp = /^-?\d+$/
-        else
-          regexp = /^-?\d+(\.\d+)?$/
-        end
+        regexp = if @options[:only_integer]
+                   /^-?\d+$/
+                 else
+                   /^-?\d+(\.\d+)?$/
+                 end
         return false unless regexp.match target_value
 
         # convert BigDecimal value
@@ -51,7 +51,7 @@ module Anodator
           end
         end
 
-        return true
+        true
       end
     end
   end

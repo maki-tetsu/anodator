@@ -1,4 +1,4 @@
-require "anodator/validator/base"
+require 'anodator/validator/base'
 
 module Anodator
   module Validator
@@ -7,7 +7,7 @@ module Anodator
     # This is the Validator to validate whether the value is present.
     class PresenceValidator < Base
       def validate
-        return !target_value.split(//).size.zero?
+        !target_value.split(//).size.zero?
       end
     end
   end

@@ -1,5 +1,5 @@
-require "anodator/validator/base"
-require "anodator/validator/configuration_error"
+require 'anodator/validator/base'
+require 'anodator/validator/configuration_error'
 
 module Anodator
   module Validator
@@ -7,29 +7,26 @@ module Anodator
       ALL_ZENKAKU_REGEXP = /(?:[\xEF\xBD\xA1-\xEF\xBD\xBF]|[\xEF\xBE\x80-\xEF\xBE\x9F])|[\x20-\x7E]/
 
       valid_option_keys :format, :all_zenkaku
-      default_options :all_zenkaku => false
+      default_options all_zenkaku: false
 
-      def initialize(target_expression, options = { })
+      def initialize(target_expression, options = {})
         super(target_expression, options)
 
         if @options[:format].is_a? String
-          @options[:format] = Regexp.new("#{@options[:format]}")
+          @options[:format] = Regexp.new((@options[:format]).to_s)
         end
       end
 
       def validate
         if target_value.split(//).size.zero?
-          if allow_blank?
-            return true
-          end
+          return true if allow_blank?
         end
-
 
         if @options[:all_zenkaku]
           return target_value !~ ALL_ZENKAKU_REGEXP
         else
           unless @options[:format].is_a? Regexp
-            raise ConfigurationError.new(":format option must be Regexp object")
+            raise ConfigurationError, ':format option must be Regexp object'
           end
 
           if @options[:format].match target_value
@@ -41,7 +38,7 @@ module Anodator
       end
 
       def format
-        return @options[:format].dup
+        @options[:format].dup
       end
     end
   end

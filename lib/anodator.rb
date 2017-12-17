@@ -1,2 +1,2 @@
-require "anodator/version"
-require "anodator/checker"
+require 'anodator/version'
+require 'anodator/checker'

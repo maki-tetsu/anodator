@@ -15,26 +15,26 @@ module Anodator
       end
 
       def indirect?
-        return @indirect
+        @indirect
       end
 
       def direct?
-        return !@indirect
+        !@indirect
       end
 
       def value
         if direct?
-          return @value
+          @value
         else
-          return @validator.argument_value_at(@value)
+          @validator.argument_value_at(@value)
         end
       end
 
       def to_s
         if direct?
-          return @value.to_s
+          @value.to_s
         else
-          return "#{@value}(Indirect)"
+          "#{@value}(Indirect)"
         end
       end
     end

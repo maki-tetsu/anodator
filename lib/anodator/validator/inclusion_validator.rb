@@ -1,4 +1,4 @@
-require "anodator/validator/base"
+require 'anodator/validator/base'
 
 module Anodator
   module Validator
@@ -11,10 +11,10 @@ module Anodator
         end
 
         unless @options[:in].respond_to? :include?
-          raise ConfigurationError.new(":in option must be responed_to include?")
+          raise ConfigurationError, ':in option must be responed_to include?'
         end
 
-        return @options[:in].include?(target_value)
+        @options[:in].include?(target_value)
       end
     end
   end
