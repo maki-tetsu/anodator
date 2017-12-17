@@ -6,6 +6,8 @@ require 'anodator/anodator_error'
 module Anodator
   # Checker class.
   class Checker
+    include Common
+
     def initialize(input_spec, rule_set, output_spec, config_check = false)
       validate_initialize_params(input_spec, rule_set, output_spec)
 
@@ -18,13 +20,14 @@ module Anodator
     end
 
     def validate_initialize_params(input_spec, rule_set, output_spec)
-      [
-        [input_spec, InputSpec],
-        [rule_set, RuleSet],
-        [output_spec, OutputSpec]
-      ].each do |c|
-        raise ArgumentError, "#{c[0]} must be #{c[1]}" unless c[0].is_a? c[1]
-      end
+      params =
+        [
+          [input_spec, InputSpec],
+          [rule_set, RuleSet],
+          [output_spec, OutputSpec]
+        ]
+
+      check_instances(params, ArgumentError)
     end
 
     def validate_configuration
@@ -33,9 +36,8 @@ module Anodator
     end
 
     def add_output_spec(output_spec, configuration_check = false)
-      unless output_spec.is_a? OutputSpec
-        raise ArgumentError, 'output_spec must be OutputSpec object'
-      end
+      check_instances([[output_spec, OutputSpec]], ArgumentError)
+
       @output_specs << output_spec
 
       validate_configuration if configuration_check
