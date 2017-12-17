@@ -25,13 +25,12 @@ module Anodator
     def setup_input_spec_items(spec_items)
       spec_items.each do |spec|
         next unless %i[number name].all? { |k| spec.key?(k) }
-        input_spec_item =
-          if spec[:type].nil?
-            InputSpecItem.new(spec[:number], spec[:name])
-          else
-            InputSpecItem.new(spec[:number], spec[:name], spec[:type])
-          end
-        push_spec_items(input_spec_item)
+        item = if spec[:type].nil?
+                 InputSpecItem.new(spec[:number], spec[:name])
+               else
+                 InputSpecItem.new(spec[:number], spec[:name], spec[:type])
+               end
+        push_spec_items(item)
       end
     end
     private :setup_input_spec_items
