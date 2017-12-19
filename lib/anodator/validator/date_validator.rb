@@ -29,36 +29,31 @@ module Anodator
       end
 
       def validate
-        if allow_blank?
-          return true if target_value.split(//).size.zero?
-        end
+        return true if allow_blank? && target_value.split(//).size.zero?
+        return false unless date = parse_date(target_value)
 
-        begin
-          # check format
-          return false unless date = parse_date(target_value)
+        validate_period
+      rescue ArgumentError # invalid date expression
+        return false
+      end
 
-          @options.each do |option, configuration|
-            case option
-            when :from
-              return false if parse_date(configuration.value) > date
-            when :to
-              return false if parse_date(configuration.value) < date
-            end
-          end
+      def validate_period
+        valid_from = from ? from <= date : true
+        valid_to = to ? to >= date : true
 
-          return true
-        rescue ArgumentError
-          # invalid date expression
-          return false
-        end
+        valid_from && valid_to
       end
 
       def from
-        @options[:from].dup if @options[:from]
+        option_to_date(:from)
       end
 
       def to
-        @options[:to].dup if @options[:to]
+        option_to_date(:to)
+      end
+
+      def option_to_date(key)
+        @options[key] ? parse_date(@options[key].dup) : nil
       end
 
       def format
@@ -72,15 +67,10 @@ module Anodator
         return date_expression if date_expression.is_a? Date
         return nil unless match_data = date_regexp.match(date_expression)
 
-        index = 0
-        date_hash = date_regexp_holders.inject({}) do |hash, key|
-          index += 1
-          hash[key] = match_data[index].to_i
-
-          next hash
+        date_hash = date_regexp_holders.each_with_object.with_index({}) do |key, hash, i|
+          hash[key] = match_data[i].to_i
         end
-        # for short year
-        if date_hash.keys.include?(:short_year)
+        if date_hash.key?(:short_year)
           date_hash[:year] = @options[:base_year].to_i + date_hash[:short_year]
         end
 
