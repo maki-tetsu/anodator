@@ -67,7 +67,7 @@ module Anodator
         return date_expression if date_expression.is_a? Date
         return nil unless match_data = date_regexp.match(date_expression)
 
-        date_hash = date_regexp_holders.each_with_object.with_index({}) do |key, hash, i|
+        date_hash = date_regexp_holders.each_with_object({}).with_index do |key, hash, i|
           hash[key] = match_data[i].to_i
         end
         if date_hash.key?(:short_year)
