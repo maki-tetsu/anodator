@@ -3,8 +3,10 @@ require 'date'
 
 module Anodator
   module Validator
+    # Validator for Date expression.
     class DateValidator < Base
-      FORMAT_SCANNER_REGEXP = /((YY(?:YY)?)|(M(?![YMD]))|(MM)|(D(?![YMD]))|(DD))/
+      FORMAT_SCANNER_REGEXP =
+        /((YY(?:YY)?)|(M(?![YMD]))|(MM)|(D(?![YMD]))|(DD))/
 
       valid_option_keys :from, :to, :format, :base_year
       default_options format: 'YYYY-MM-DD', base_year: 2000
@@ -15,16 +17,21 @@ module Anodator
         # format check
         date_regexp_holders
 
+        # setup options for from and to
+        setup_period_options
+      end
+
+      def setup_period_options
         %i[from to].each do |key|
-          next if @options[key].nil?
+          next unless @options.key?(key)
           @options[key] = proxy_value(@options[key])
           next unless @options[key].direct? && !@options[key].value.is_a?(Date)
+
           date = parse_date(@options[key].value.to_s)
-          if date.nil?
-            raise ArgumentError, "Invalid date expression '#{@options[key].value}'"
-          else
-            @options[key] = proxy_value(date)
-          end
+          msg = "Invalid date expression '#{@options[key].value}'"
+          raise ArgumentError, msg if date.nil?
+
+          @options[key] = proxy_value(date)
         end
       end
 
@@ -32,32 +39,36 @@ module Anodator
         return true if allow_blank? && target_value.split(//).size.zero?
         return false unless date = parse_date(target_value)
 
-        validate_period
+        validate_period(date)
       rescue ArgumentError # invalid date expression
         return false
       end
 
-      def validate_period
-        valid_from = from ? from <= date : true
-        valid_to = to ? to >= date : true
+      def validate_period(date)
+        valid_from = from ? from_date <= date : true
+        valid_to = to ? to_date >= date : true
 
         valid_from && valid_to
       end
 
       def from
-        option_to_date(:from)
+        @options[:from].dup
       end
 
       def to
-        option_to_date(:to)
-      end
-
-      def option_to_date(key)
-        @options[key] ? parse_date(@options[key].dup) : nil
+        @options[:to].dup
       end
 
       def format
         @options[:format].dup
+      end
+
+      def from_date
+        from ? parse_date(from.value) : nil
+      end
+
+      def to_date
+        to ? parse_date(to.value) : nil
       end
 
       # parse string with :format option
@@ -65,10 +76,11 @@ module Anodator
       # not matched return nil
       def parse_date(date_expression)
         return date_expression if date_expression.is_a? Date
-        return nil unless match_data = date_regexp.match(date_expression)
+        return nil unless date_regexp.match(date_expression)
 
-        date_hash = date_regexp_holders.each_with_object({}).with_index do |(key, hash), i|
-          hash[key] = match_data[i].to_i
+        date_hash = date_regexp_holders.each_with_object({})
+                                       .with_index(1) do |(key, hash), i|
+          hash[key] = Regexp.last_match[i].to_i
         end
         if date_hash.key?(:short_year)
           date_hash[:year] = @options[:base_year].to_i + date_hash[:short_year]
@@ -95,31 +107,29 @@ module Anodator
 
       def date_regexp_holders
         scans = @options[:format].scan FORMAT_SCANNER_REGEXP
-        year_count = 0
-        month_count = 0
-        day_count = 0
+        counts = { year: 0, month: 0, day: 0 }
+        msg = 'date format must be contained year(YYYY or YY), ' \
+              'month(MM or M) and day(DD or D).'
+
         holders = scans.map do |scan|
           case scan.first
           when 'YYYY'
-            year_count += 1
+            counts[:year] += 1
             :year
           when 'YY'
-            year_count += 1
+            counts[:year] += 1
             :short_year
           when 'MM', 'M'
-            month_count += 1
+            counts[:month] += 1
             :month
           when 'DD', 'D'
-            day_count += 1
+            counts[:day] += 1
             :day
           end
         end
-        unless holders.size == 3
-          raise ArgumentError, 'date format must be contained year(YYYY or YY), month(MM or M) and day(DD or D).'
-        end
-        unless year_count == 1 && month_count == 1 && day_count == 1
-          raise ArgumentError, 'date format must be contained year(YYYY or YY), month(MM or M) and day(DD or D).'
-        end
+
+        raise ArgumentError, msg unless holders.size == 3
+        raise ArgumentError, msg unless counts.values.all? { |v| v == 1 }
 
         holders
       end
