@@ -7,6 +7,14 @@ module Anodator
     class DateValidator < Base
       FORMAT_SCANNER_REGEXP =
         /((YY(?:YY)?)|(M(?![YMD]))|(MM)|(D(?![YMD]))|(DD))/
+      HOLDER_DEFS = {
+        'YYYY' => :year,
+        'YY' => :short_year,
+        'MM' => :month,
+        'M' => :month,
+        'DD' => :day,
+        'D' => :day
+      }.freeze
 
       valid_option_keys :from, :to, :format, :base_year
       default_options format: 'YYYY-MM-DD', base_year: 2000
@@ -14,10 +22,7 @@ module Anodator
       def initialize(target_expression, options = {})
         super(target_expression, options)
 
-        # format check
-        date_regexp_holders
-
-        # setup options for from and to
+        check_format
         setup_period_options
       end
 
@@ -37,7 +42,8 @@ module Anodator
 
       def validate
         return true if allow_blank? && target_value.split(//).size.zero?
-        return false unless date = parse_date(target_value)
+        date = parse_date(target_value)
+        return false unless date
 
         validate_period(date)
       rescue ArgumentError # invalid date expression
@@ -106,34 +112,31 @@ module Anodator
       private :date_regexp
 
       def date_regexp_holders
-        scans = @options[:format].scan FORMAT_SCANNER_REGEXP
-        counts = { year: 0, month: 0, day: 0 }
-        msg = 'date format must be contained year(YYYY or YY), ' \
-              'month(MM or M) and day(DD or D).'
-
-        holders = scans.map do |scan|
-          case scan.first
-          when 'YYYY'
-            counts[:year] += 1
-            :year
-          when 'YY'
-            counts[:year] += 1
-            :short_year
-          when 'MM', 'M'
-            counts[:month] += 1
-            :month
-          when 'DD', 'D'
-            counts[:day] += 1
-            :day
-          end
-        end
-
-        raise ArgumentError, msg unless holders.size == 3
-        raise ArgumentError, msg unless counts.values.all? { |v| v == 1 }
-
-        holders
+        parse_date_format
       end
       private :date_regexp_holders
+
+      def parse_date_format
+        @options[:format].scan(FORMAT_SCANNER_REGEXP).map do |scan|
+          HOLDER_DEFS[scan.first]
+        end
+      end
+      private :parse_date_format
+
+      def check_format
+        msg = 'date format must be contained year(YYYY or YY), ' \
+              'month(MM or M) and day(DD or D).'
+        holders = parse_date_format
+
+        checked_holders = holders.inject([]) do |array, holder|
+          raise ArgumentError, msg if holder.nil?
+          array << (holder == :short_year ? :year : holder)
+        end
+
+        raise ArgumentError, msg unless checked_holders.size == 3
+        raise ArgumentError, msg unless checked_holders.uniq!.nil?
+      end
+      private :check_format
     end
   end
 end
