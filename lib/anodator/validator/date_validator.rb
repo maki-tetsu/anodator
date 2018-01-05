@@ -125,10 +125,10 @@ module Anodator
               'month(MM or M) and day(DD or D).'
 
         checked_holders = date_regexp_holders.inject([]) do |array, holder|
-          raise ArgumentError, msg if holder.nil?
           array << (holder == :short_year ? :year : holder)
         end
 
+        raise ArgumentError, msg if checked_holders.include?(nil)
         raise ArgumentError, msg unless checked_holders.size == 3
         raise ArgumentError, msg unless checked_holders.uniq!.nil?
       end
