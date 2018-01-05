@@ -3,8 +3,20 @@ require 'date'
 
 module Anodator
   module Validator
+    # Validator for Date expression.
     class DateValidator < Base
-      FORMAT_SCANNER_REGEXP = /((YY(?:YY)?)|(M(?![YMD]))|(MM)|(D(?![YMD]))|(DD))/
+      FORMAT_SCANNER_REGEXP =
+        /((YY(?:YY)?)|(M(?![YMD]))|(MM)|(D(?![YMD]))|(DD))/
+      HOLDER_DEFS = {
+        'YYYY' => :year,
+        'YY' => :short_year,
+        'MM' => :month,
+        'M' => :month,
+        'DD' => :day,
+        'D' => :day
+      }.freeze
+      HOLDERS = %w[YYYY YY MM M DD D].freeze
+      REGEXPS = %w[(\d{4}) (\d{2}) (\d{2}) (\d{1,2}) (\d{2}) (\d{1,2})].freeze
 
       valid_option_keys :from, :to, :format, :base_year
       default_options format: 'YYYY-MM-DD', base_year: 2000
@@ -12,128 +24,115 @@ module Anodator
       def initialize(target_expression, options = {})
         super(target_expression, options)
 
-        # format check
-        date_regexp_holders
-
-        %i[from to].each do |key|
-          next if @options[key].nil?
-          @options[key] = proxy_value(@options[key])
-          next unless @options[key].direct? && !@options[key].value.is_a?(Date)
-          date = parse_date(@options[key].value.to_s)
-          if date.nil?
-            raise ArgumentError, "Invalid date expression '#{@options[key].value}'"
-          else
-            @options[key] = proxy_value(date)
-          end
-        end
+        check_format
+        setup_period_options
       end
 
       def validate
-        if allow_blank?
-          return true if target_value.split(//).size.zero?
-        end
+        return true if allow_blank? && target_value.split(//).size.zero?
+        date = parse_date(target_value)
+        return false unless date
 
-        begin
-          # check format
-          return false unless date = parse_date(target_value)
+        validate_period(date)
+      rescue ArgumentError # invalid date expression
+        return false
+      end
 
-          @options.each do |option, configuration|
-            case option
-            when :from
-              return false if parse_date(configuration.value) > date
-            when :to
-              return false if parse_date(configuration.value) < date
-            end
-          end
+      def validate_period(date)
+        valid_from = from ? from_date <= date : true
+        valid_to = to ? to_date >= date : true
 
-          return true
-        rescue ArgumentError
-          # invalid date expression
-          return false
-        end
+        valid_from && valid_to
       end
 
       def from
-        @options[:from].dup if @options[:from]
+        @options[:from].dup
       end
 
       def to
-        @options[:to].dup if @options[:to]
+        @options[:to].dup
       end
 
       def format
         @options[:format].dup
       end
 
-      # parse string with :format option
-      #
-      # not matched return nil
+      def base_year
+        @options[:base_year].to_i
+      end
+
+      def from_date
+        from ? parse_date(from.value) : nil
+      end
+
+      def to_date
+        to ? parse_date(to.value) : nil
+      end
+
+      private
+
+      def setup_period_options
+        %i[from to].each do |key|
+          setup_date_option(key) if @options.key?(key)
+        end
+      end
+
+      def setup_date_option(key)
+        option = proxy_value(@options[key])
+        if option.direct? && !option.value.is_a?(Date)
+          date = parse_date(option.value.to_s)
+          msg = "Invalid date expression '#{option.value}'"
+          raise ArgumentError, msg if date.nil?
+
+          option = proxy_value(date)
+        end
+
+        @options[key] = option
+      end
+
       def parse_date(date_expression)
         return date_expression if date_expression.is_a? Date
-        return nil unless match_data = date_regexp.match(date_expression)
+        return nil unless date_regexp.match(date_expression)
 
-        index = 0
-        date_hash = date_regexp_holders.inject({}) do |hash, key|
-          index += 1
-          hash[key] = match_data[index].to_i
-
-          next hash
+        date_hash = date_regexp_holders.each_with_object({})
+                                       .with_index(1) do |(key, hash), i|
+          hash[key] = Regexp.last_match[i].to_i
         end
-        # for short year
-        if date_hash.keys.include?(:short_year)
-          date_hash[:year] = @options[:base_year].to_i + date_hash[:short_year]
-        end
-
+        convert_short_year(date_hash)
         Date.new(date_hash[:year], date_hash[:month], date_hash[:day])
       end
-      private :parse_date
+
+      def convert_short_year(hash)
+        hash[:year] = base_year + hash[:short_year] if hash.key?(:short_year)
+      end
 
       def date_regexp
-        date_regexp_holders # check format string
+        regexp_string = HOLDERS.each_with_index.inject(format) do |s, (h, i)|
+          s.sub(/#{h}/, REGEXPS[i])
+        end
 
-        regexp_string = @options[:format].dup
-        regexp_string.sub!(/YYYY/, '(\d{4})')
-        regexp_string.sub!(/YY/,   '(\d{2})')
-        regexp_string.sub!(/MM/,   '(\d{2})')
-        regexp_string.sub!(/M/,    '(\d{1,2})')
-        regexp_string.sub!(/DD/,   '(\d{2})')
-        regexp_string.sub!(/D/,    '(\d{1,2})')
-
-        Regexp.new("^#{regexp_string}$")
+        /^#{regexp_string}$/
       end
-      private :date_regexp
 
       def date_regexp_holders
-        scans = @options[:format].scan FORMAT_SCANNER_REGEXP
-        year_count = 0
-        month_count = 0
-        day_count = 0
-        holders = scans.map do |scan|
-          case scan.first
-          when 'YYYY'
-            year_count += 1
-            :year
-          when 'YY'
-            year_count += 1
-            :short_year
-          when 'MM', 'M'
-            month_count += 1
-            :month
-          when 'DD', 'D'
-            day_count += 1
-            :day
-          end
+        format.scan(FORMAT_SCANNER_REGEXP).map do |scan|
+          HOLDER_DEFS[scan.first]
         end
-        unless holders.size == 3
-          raise ArgumentError, 'date format must be contained year(YYYY or YY), month(MM or M) and day(DD or D).'
-        end
-        unless year_count == 1 && month_count == 1 && day_count == 1
-          raise ArgumentError, 'date format must be contained year(YYYY or YY), month(MM or M) and day(DD or D).'
+      end
+
+      def check_format
+        msg = 'date format must be contained year(YYYY or YY), ' \
+              'month(MM or M) and day(DD or D).'
+        hash = { year: :year, month: :month, day: :day, short_year: :year }
+
+        checked_holders = date_regexp_holders.inject([]) do |array, holder|
+          array << hash[holder]
         end
 
-        holders
+        raise ArgumentError, msg if checked_holders.include?(nil)
+        raise ArgumentError, msg unless checked_holders.size == 3
+        raise ArgumentError, msg unless checked_holders.uniq!.nil?
       end
-      private :date_regexp_holders
     end
   end
 end
