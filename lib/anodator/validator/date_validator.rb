@@ -123,9 +123,10 @@ module Anodator
       def check_format
         msg = 'date format must be contained year(YYYY or YY), ' \
               'month(MM or M) and day(DD or D).'
+        hash = { year: :year, month: :month, day: :day, short_year: :year }
 
         checked_holders = date_regexp_holders.inject([]) do |array, holder|
-          array << (holder == :short_year ? :year : holder)
+          array << hash[holder]
         end
 
         raise ArgumentError, msg if checked_holders.include?(nil)
