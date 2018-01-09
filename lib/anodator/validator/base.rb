@@ -165,8 +165,7 @@ module Anodator
         @@values[name_or_index].to_s
       end
 
-      def data_source_at(expression)
-        identifier, key, column = expression.split(':', 3)
+      def data_source_at(identifier, key, column)
         @@data_source_set.fetch(identifier, key, column)
       end
 

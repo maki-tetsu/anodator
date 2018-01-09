@@ -16,8 +16,11 @@ module Anodator
         end
 
         if matched = REGEXP_DATA_SOURCE.match(@value.to_s)
+          @indirect = true
           @data_source = true
-          @value = machted[1]
+          @value = matched[1].split(':', 3).map do |v|
+            ValueProxy.new(v, validator)
+          end
         end
       end
 
@@ -35,9 +38,13 @@ module Anodator
 
       def value
         if indirect?
-          @validator.argument_value_at(@value)
-        elsif data_source?
-          @validator.data_source_at(@value)
+          if data_source?
+            @validator.data_source_at(@value[0].value,
+                                      @value[1].value,
+                                      @value[2].value)
+          else
+            @validator.argument_value_at(@value)
+          end
         else # if direct?
           @value
         end
@@ -47,7 +54,7 @@ module Anodator
         if indirect?
           "#{@value}(Indirect)"
         elsif data_source?
-          "#{@value}(DataSource)"
+          @value.map { |v| v.to_s }.join(':') + '(DataSource)'
         else
           @value.to_s
         end
