@@ -1,10 +1,12 @@
 # Simple check example by anodator
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require File.join(File.dirname(__FILE__), '..', 'lib', 'anodator')
+require 'anodator'
 include Anodator
 
 ### target data columns
-# ID, Family name, First name, Sex, Phone number, Birthday, Blood type, Regist date
+# ID, Family name, First name, Sex, Phone number, Birthday, Blood type, Regist date, Score
 input_spec_array_definition =
   [
     { number: '1', name: 'ID' },
@@ -14,7 +16,8 @@ input_spec_array_definition =
     { number: '5', name: 'Phone number' },
     { number: '6', name: 'Birthday' },
     { number: '7', name: 'Blood type' },
-    { number: '8', name: 'Regist date' }
+    { number: '8', name: 'Regist date' },
+    { number: '9', name: 'Score' }
   ]
 input_spec = InputSpec.new(input_spec_array_definition)
 
@@ -59,6 +62,7 @@ validator = Validator::InclusionValidator.new('4', in: %w[M F])
 rule_set << Rule.new('4',
                      Message.new("[[4::name]] must be 'M' or 'F'.([[4::value]])"),
                      validator)
+valid_sex = validator
 
 ## Phone number
 # Phone number is only number
@@ -100,6 +104,15 @@ rule_set << Rule.new('6',
                      Message.new('[[6::name]] must be less than [[8::name]].([[6::value]] < [[8::value]])'),
                      validator)
 
+## Score
+validator = Validator::NumericValidator.new('9',
+                                            only_integer: true,
+                                            greater_than_or_equal_to: '{{scores:[[4]]:min}}',
+                                            less_than_or_equal_to: '{{scores:[[4]]:max}}')
+rule_set << Rule.new('9',
+                     Message.new('[[9::name]] must be greater than or equal to configuration score'),
+                     validator, valid_sex)
+
 ### output spec
 ## error list
 items =
@@ -116,19 +129,35 @@ output_spec = OutputSpec.new(items,
 ### Checker
 checker = Checker.new(input_spec, rule_set, output_spec)
 
+### DataSource
+data_source_values = {
+  M: {
+    max: 90,
+    min: 65
+  },
+  F: {
+    max: 95,
+    min: 70
+  }
+}
+ds = DataSource.new('scores', data_source_values)
+checker.add_data_source(ds)
+
+puts checker.rule_info
+
 ### target datas
 datas =
   [
-    ['1', 'Murayama', 'Honoka', 'F', '08050967141', '1971-10-01', 'B', '2014-12-31'],
-    ['2', 'Izawa', 'Kazuma', 'M', '09070028635', '1968-03-24', 'O', '2014-12-31'],
-    ['3', 'Hasebe', 'Miyu', 'F', '08087224562', '1991-01-21', 'A', '2014-12-31'],
-    ['4', 'Furusawa', 'Eri', 'F', '08017372898', '1965-02-14', 'O', '2014-12-31'],
-    ['5', 'Hiramoto', 'Yutaka', 'M', '', '1986-09-14', 'AB', '2014-12-31'],
-    ['6', 'Matsuzaki', 'Runa', 'F', '', '1960-03-27', 'O', '2014-12-31'],
-    ['7', 'Inagaki', 'Kouichi', 'M', '', '1961-01-04', 'B', '2014-12-31'],
-    ['8', 'Kase', 'Sueji', '', '', '1969-03-19', 'B', '2014-12-31'],
-    ['9', 'Kawanishi', 'Hinako', 'F', '08029628506', '1970-05-29', 'B', '2014-12-31'],
-    ['10', 'Sakurai', 'Eijirou', 'M', '', '2015-01-01', 'A', '2014-12-31']
+    ['1', 'Murayama', 'Honoka', 'F', '08050967141', '1971-10-01', 'B', '2014-12-31', '96'],
+    ['2', 'Izawa', 'Kazuma', 'M', '09070028635', '1968-03-24', 'O', '2014-12-31', '91'],
+    ['3', 'Hasebe', 'Miyu', 'F', '08087224562', '1991-01-21', 'A', '2014-12-31', '95'],
+    ['4', 'Furusawa', 'Eri', 'F', '08017372898', '1965-02-14', 'O', '2014-12-31', '70'],
+    ['5', 'Hiramoto', 'Yutaka', 'M', '', '1986-09-14', 'AB', '2014-12-31', '90'],
+    ['6', 'Matsuzaki', 'Runa', 'F', '', '1960-03-27', 'O', '2014-12-31', '69'],
+    ['7', 'Inagaki', 'Kouichi', 'M', '', '1961-01-04', 'B', '2014-12-31', '65'],
+    ['8', 'Kase', 'Sueji', '', '', '1969-03-19', 'B', '2014-12-31', '92'],
+    ['9', 'Kawanishi', 'Hinako', 'F', '08029628506', '1970-05-29', 'B', '2014-12-31', '92'],
+    ['10', 'Sakurai', 'Eijirou', 'M', '', '2015-01-01', 'A', '2014-12-31', '64']
   ]
 
 ### run check for all datas

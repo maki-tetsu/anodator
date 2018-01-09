@@ -7,6 +7,9 @@ module Anodator
       # value of target for validation
       @@values = nil
 
+      # data source set
+      @@data_source_set = nil
+
       # valid option keys
       #
       # :allow_blank options are all available options in Validator.
@@ -84,6 +87,18 @@ module Anodator
         def values
           @@values
         end
+
+        # Set the data source with check.
+        def data_source_set=(data_source_set)
+          msg = 'data_source_set must be Anodator::DataSourceSet'
+          raise ArgumentError, msg unless data_source_set.is_a? DataSourceSet
+
+          @@data_source_set = data_source_set
+        end
+
+        def data_source_set
+          @@data_source_set
+        end
       end
 
       # initializer
@@ -148,6 +163,10 @@ module Anodator
 
       def argument_value_at(name_or_index)
         @@values[name_or_index].to_s
+      end
+
+      def data_source_at(identifier, key, column)
+        @@data_source_set.fetch(identifier, key, column)
       end
 
       def allow_blank?
