@@ -17,7 +17,7 @@ module Anodator
     end
 
     def fetch(identifier, key, column)
-      identifier = identfier.to_s.to_sym
+      identifier = identifier.to_s.to_sym
       key = key.to_s.to_sym
       column = column.to_s.to_sym
 
