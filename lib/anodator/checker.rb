@@ -1,6 +1,7 @@
 require 'anodator/input_spec'
 require 'anodator/rule_set'
 require 'anodator/output_spec'
+require 'anodator/data_source_set'
 require 'anodator/anodator_error'
 
 module Anodator
@@ -14,7 +15,9 @@ module Anodator
       @input_spec = input_spec
       @rule_set = rule_set
       @output_specs = [output_spec]
+      @data_source_set = DataSourceSet.new
       Validator::Base.values = @input_spec
+      Validator::Base.data_source_set = @data_source_set
 
       validate_configuration if config_check
     end
@@ -41,6 +44,10 @@ module Anodator
       @output_specs << output_spec
 
       validate_configuration if configuration_check
+    end
+
+    def add_data_source(data_source)
+      @data_source_set << data_source
     end
 
     def run(values)
