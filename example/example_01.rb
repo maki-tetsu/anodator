@@ -123,7 +123,7 @@ items =
     :error_level
   ]
 output_spec = OutputSpec.new(items,
-                             target: OutputSpec::TARGET_ERROR,
+                             target: OutputSpec::TARGETS[:ERROR],
                              include_no_error: false)
 
 ### Checker

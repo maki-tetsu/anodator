@@ -26,8 +26,8 @@ RSpec.describe OutputSpec, '.new' do
         expect(@output_spec.items).to be_empty
       end
 
-      it '#target should be OutputSpec::TARGET_ERROR by default' do
-        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
+      it '#target should be OutputSpec::TARGETS[:ERROR] by default' do
+        expect(@output_spec.target).to be == OutputSpec::TARGETS[:ERROR]
       end
 
       it '#include_no_error should be false by default' do
@@ -62,8 +62,8 @@ RSpec.describe OutputSpec, '.new' do
         expect(@output_spec.items).not_to be_empty
       end
 
-      it '#target should be OutputSpec::TARGET_ERROR by default' do
-        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
+      it '#target should be OutputSpec::TARGETS[:ERROR] by default' do
+        expect(@output_spec.target).to be == OutputSpec::TARGETS[:ERROR]
       end
 
       it '#include_no_error should be false by default' do
@@ -97,8 +97,8 @@ RSpec.describe OutputSpec, '.new' do
         expect(@output_spec.items).not_to be_empty
       end
 
-      it '#target should be OutputSpec::TARGET_ERROR by default' do
-        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
+      it '#target should be OutputSpec::TARGETS[:ERROR] by default' do
+        expect(@output_spec.target).to be == OutputSpec::TARGETS[:ERROR]
       end
 
       it '#include_no_error should be false by default' do
@@ -116,7 +116,7 @@ RSpec.describe OutputSpec, '.new' do
                          3
                          name
                        ],
-                       target: OutputSpec::TARGET_DATA)
+                       target: OutputSpec::TARGETS[:DATA])
       }
     end
 
@@ -133,8 +133,8 @@ RSpec.describe OutputSpec, '.new' do
         expect(@output_spec.items).not_to be_empty
       end
 
-      it '#target should be OutputSpec::TARGET_DATA' do
-        expect(@output_spec.target).to be == OutputSpec::TARGET_DATA
+      it '#target should be OutputSpec::TARGETS[:DATA]' do
+        expect(@output_spec.target).to be == OutputSpec::TARGETS[:DATA]
       end
 
       it '#include_no_error should be false by default' do
@@ -155,7 +155,7 @@ RSpec.describe OutputSpec, '.new' do
                          :error_message,
                          :error_level
                        ],
-                       target: OutputSpec::TARGET_ERROR,
+                       target: OutputSpec::TARGETS[:ERROR],
                        include_no_error: true)
       }
     end
@@ -173,8 +173,8 @@ RSpec.describe OutputSpec, '.new' do
         expect(@output_spec.items).not_to be_empty
       end
 
-      it '#target should be OutputSpec::TARGET_ERROR' do
-        expect(@output_spec.target).to be == OutputSpec::TARGET_ERROR
+      it '#target should be OutputSpec::TARGETS[:ERROR]' do
+        expect(@output_spec.target).to be == OutputSpec::TARGETS[:ERROR]
       end
 
       it '#include_no_error should be true' do
@@ -230,7 +230,7 @@ RSpec.describe OutputSpec, '#generate' do
                                         :error_message,
                                         :error_level
                                       ],
-                                      target: OutputSpec::TARGET_ERROR,
+                                      target: OutputSpec::TARGETS[:ERROR],
                                       include_no_error: true)
       end
 
@@ -260,7 +260,7 @@ RSpec.describe OutputSpec, '#generate' do
                                         :warning_count,
                                         :error_and_warning_count
                                       ],
-                                      target: OutputSpec::TARGET_DATA,
+                                      target: OutputSpec::TARGETS[:DATA],
                                       include_no_error: true)
       end
 
@@ -292,7 +292,7 @@ RSpec.describe OutputSpec, '#generate' do
                                         :error_message,
                                         :error_level
                                       ],
-                                      target: OutputSpec::TARGET_ERROR,
+                                      target: OutputSpec::TARGETS[:ERROR],
                                       include_no_error: true)
       end
 
@@ -316,7 +316,7 @@ RSpec.describe OutputSpec, '#generate' do
                                         :error_message,
                                         :error_level
                                       ],
-                                      target: OutputSpec::TARGET_ERROR,
+                                      target: OutputSpec::TARGETS[:ERROR],
                                       include_no_error: false)
       end
 
@@ -340,7 +340,7 @@ RSpec.describe OutputSpec, '#generate' do
                                         :warning_count,
                                         :error_and_warning_count
                                       ],
-                                      target: OutputSpec::TARGET_DATA,
+                                      target: OutputSpec::TARGETS[:DATA],
                                       include_no_error: true)
       end
 

@@ -54,7 +54,7 @@ RSpec.describe Checker, '.new' do
                                                :target_numbers,
                                                :error_message
                                              ],
-                                             target: OutputSpec::TARGET_ERROR,
+                                             target: OutputSpec::TARGETS[:ERROR],
                                              include_no_error: true)
     @error_report_output_spec = OutputSpec.new([
                                                  'ID',
@@ -62,7 +62,7 @@ RSpec.describe Checker, '.new' do
                                                  :warning_count,
                                                  :error_and_warning_count
                                                ],
-                                               target: OutputSpec::TARGET_DATA)
+                                               target: OutputSpec::TARGETS[:DATA])
     @valid_values = %w[1 Tetsuhisa MAKINO 1980-01-25 M 1-2-3 123-3456]
     @invalid_values = ['1', 'te', 'ma', '1980/01/25', 'C', '000000000000', '1234-567']
   end
@@ -148,7 +148,7 @@ RSpec.describe 'on after creation' do
                                                :target_numbers,
                                                :error_message
                                              ],
-                                             target: OutputSpec::TARGET_ERROR,
+                                             target: OutputSpec::TARGETS[:ERROR],
                                              include_no_error: true)
     @error_report_output_spec = OutputSpec.new([
                                                  'ID',
@@ -156,7 +156,7 @@ RSpec.describe 'on after creation' do
                                                  :warning_count,
                                                  :error_and_warning_count
                                                ],
-                                               target: OutputSpec::TARGET_DATA)
+                                               target: OutputSpec::TARGETS[:DATA])
     @valid_values = %w[1 Tetsuhisa MAKINO 1980-01-25 M 1-2-3 123-3456]
     @invalid_values = ['1', 'te', 'ma', '1980/01/25', 'C', '000000000000', '1234-567']
 

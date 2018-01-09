@@ -1,7 +1,10 @@
 module Anodator
+  # OutputSpec.
   class OutputSpec
-    TARGET_DATA  = 'DATA'.freeze
-    TARGET_ERROR = 'ERROR'.freeze
+    TARGETS = {
+      DATA: 'DATA',
+      ERROR: 'ERROR'
+    }.freeze
 
     VALID_SYMBOL_ITEMS = %i[
       target_numbers
@@ -18,11 +21,8 @@ module Anodator
     attr_accessor :separator, :value_separator
 
     def initialize(items = [], options = {})
+      setup_defaults
       @items            = items.to_a
-      @target           = TARGET_ERROR
-      @include_no_error = false
-      @separator        = ' '
-      @value_separator  = ''
 
       options.each do |key, opt|
         case key
@@ -37,12 +37,20 @@ module Anodator
         end
       end
 
-      unless [TARGET_DATA, TARGET_ERROR].include?(@target)
+      unless TARGETS.values.include?(@target)
         raise ArgumentError, "unknown target option value #{@target}."
       end
 
       check_items
     end
+
+    def setup_defaults
+      @target           = TARGETS[:ERROR]
+      @include_no_error = false
+      @separator        = ' '
+      @value_separator  = ''
+    end
+    private :setup_defaults
 
     def validate_configuration
       @items.each do |item|
@@ -63,9 +71,9 @@ module Anodator
     private :check_items
 
     def generate(input_spec_with_values, check_results)
-      if @target == TARGET_DATA
+      if @target == TARGETS[:DATA]
         generate_data(input_spec_with_values, check_results)
-      else # @target == TARGET_ERROR
+      else # @target == TARGETS[:ERROR]
         generate_error(input_spec_with_values, check_results)
       end
     end
