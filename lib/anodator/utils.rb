@@ -211,7 +211,7 @@ module Anodator
           raise "Unknown validator identifier '#{row[4]}'"
         end
         if Rule::ERROR_LEVEL_NAMES.values.include?(row[5])
-          level = Rule::ERROR_LEVELS[Rule::ERROR_LEVEL_NAMES.index(row[5])]
+          level = Rule::ERROR_LEVELS[Rule::ERROR_LEVEL_NAMES.key(row[5])]
         else
           raise "Unknown error type '#{row[5]}'"
         end
